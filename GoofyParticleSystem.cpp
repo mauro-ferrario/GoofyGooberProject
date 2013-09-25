@@ -47,13 +47,12 @@ void GoofyParticleSystem::initGoofyFlowField(GoofyFlowField &externaGoofyFlowFie
 
 void GoofyParticleSystem::addParticle(ofVec2f newPosition)
 {
-    GoofyParticle* particle = new GoofyParticle(newPosition, ofRandom(3));
     addParticle(newPosition, ofRandom(3),0);
 }
 
 void GoofyParticleSystem::addParticle(ofVec2f newPosition, float maxVelocity, long int life)
 {
-    GoofyParticle* particle = new GoofyParticle(newPosition, ofRandom(3));
+    GoofyParticle* particle = new GoofyParticle(newPosition, maxVelocity);
     particle->position = newPosition;
     particle->target = newPosition;
     particle->setBoundingBox(boundingBox);
@@ -212,6 +211,17 @@ void GoofyParticleSystem::setBoundingBox(ofRectangle rect)
     while ( vItr != particles.end() )
     {
         (*vItr)->setBoundingBox(rect);
+        vItr++;
+    }
+}
+
+void GoofyParticleSystem::changeVelocity(float perc)
+{    
+    vector<GoofyParticle*>::iterator vItr = particles.begin();
+    while ( vItr != particles.end() )
+    {
+        float newVel = (*vItr)->originalLimitVelocity * perc;
+        (*vItr)->limitVelocity = newVel;
         vItr++;
     }
 }

@@ -34,9 +34,9 @@ public:
     ofRectangle     boundingBox;
     ofVec2f         acceleration;
     ofVec2f         position;
-    vector<ofVec2f> positions;
     ofVec2f         velocity;
     float           limitVelocity;
+    float           originalLimitVelocity;
     float           spring;
     float           friction;
     ofColor         color;

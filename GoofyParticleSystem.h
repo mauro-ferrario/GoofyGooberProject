@@ -14,6 +14,7 @@
 #include "GoofyFlowField.h"
 #include "GoofyMagneticPoint.h"
 
+
 class GoofyParticleSystem
 {
 public:
@@ -34,6 +35,7 @@ public:
     void                            addRepeller(GoofyMagneticPoint repeller);
     void                            addAttractor(GoofyMagneticPoint attractor);
     void                            applyAttraction(GoofyParticle* particle);
+    void                            changeVelocity(float perc);
     virtual void                    lastActionInsideUpdateLoop(GoofyParticle* particle);
     
     bool                            moveNoise;
@@ -45,6 +47,7 @@ public:
     vector<GoofyParticle*>          particles;
     vector<GoofyMagneticPoint>      repellers;
     vector<GoofyMagneticPoint>      attractors;
+
 };
 
 #endif

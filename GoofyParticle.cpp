@@ -15,6 +15,7 @@ GoofyParticle::GoofyParticle(ofVec2f position, float limitVelocity, ofColor colo
     acceleration.x = acceleration.y = 0;
     this->position = position;
     this->limitVelocity = limitVelocity;
+    this->originalLimitVelocity = limitVelocity;
     color = color;
     active = true;
     setBoundingBox(ofRectangle(0,0, ofGetWindowWidth(), ofGetWindowHeight()));
@@ -73,7 +74,6 @@ void GoofyParticle::draw()
     ofSetColor(color);
     ofCircle(position, 1);
     ofPopStyle();
-    positions.push_back(position);  // Rimuovere questo
 }
 
 void GoofyParticle::setBoundingBox(ofRectangle rect)
