@@ -3,8 +3,6 @@
 //
 //  Created by xxx on 21/09/13.
 //
-//
-// test per git
 
 #include "GoofyPerlinNoise.h"
 
