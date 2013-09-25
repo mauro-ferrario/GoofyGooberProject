@@ -20,7 +20,7 @@ void GoofyParticleSystem::init(uint totParticle)
 {
     for(int a = 0; a < totParticle; a++)
     {
-        addParticle(ofVec2f(ofGetWindowWidth()*ofRandomf(), ofGetWindowHeight()*ofRandomf()));
+        addParticle(ofVec2f(ofGetWindowWidth()*ofRandom(0,1), ofGetWindowHeight()*ofRandom(0,1)));
     }
 }
 
