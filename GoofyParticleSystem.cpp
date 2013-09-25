@@ -16,6 +16,7 @@ GoofyParticleSystem::GoofyParticleSystem()
     setBoundingBox(ofRectangle(0,0, ofGetWindowWidth(), ofGetWindowHeight()));
 }
 
+// Init with number of particle
 void GoofyParticleSystem::init(uint totParticle)
 {
     for(int a = 0; a < totParticle; a++)
