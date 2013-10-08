@@ -42,6 +42,8 @@ public:
     bool                            followFlow;
     ofRectangle                     boundingBox;
     
+    float                           percParticleSpeed;
+    
     GoofyPerlinNoise                goofyPerlinNoise;
     GoofyFlowField                  goofyFlowField;
     vector<GoofyParticle*>          particles;

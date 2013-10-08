@@ -26,12 +26,12 @@ public:
     float           speed;
 
     bool            drawPerlinImage;
+    ofImage         perlinImg;
     
 private:
     float           time;
     int             perlinWidth;
     int             perlinHeight;
-    ofImage         perlinImg;
     ofRectangle     perlinImageRect;
 };
 
