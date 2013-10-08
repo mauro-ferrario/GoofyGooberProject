@@ -15,6 +15,22 @@ GoofyPerlinNoise::GoofyPerlinNoise(float resX, float resY, float speed)
     this->drawPerlinImage = false;
 }
 
+ofParameterGroup* GoofyPerlinNoise::getParameterGroup()
+{
+    if(!noiseParams)
+       {
+           noiseParams = new ofParameterGroup();
+       }
+    if(noiseParams->getName() == "")
+    {
+        noiseParams->setName("Goofy Noise");
+        noiseParams->add(resX.set("Res X",0.01,.001,.01));
+        noiseParams->add(resY.set("Res Y",0.01,.001,.01));
+        noiseParams->add(speed.set("Speed",.05,.0,.1));
+    }
+    return noiseParams;
+}
+
 void GoofyPerlinNoise::initPerlinImage(int perlinImgWidth, int perlinImgHeight, int width, int height)
 {
     perlinImg.allocate(perlinImgWidth, perlinImgHeight, OF_IMAGE_GRAYSCALE);
