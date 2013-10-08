@@ -32,9 +32,10 @@ public:
     void                            setBoundingBox(ofRectangle rect);
     void                            removeNonActiveParticles();
     void                            applyRepulsions(GoofyParticle* particle);
-    void                            addRepeller(GoofyMagneticPoint repeller);
-    void                            addAttractor(GoofyMagneticPoint attractor);
+    void                            addRepeller(GoofyMagneticPoint* repeller);
+    void                            addAttractor(GoofyMagneticPoint* attractor);
     void                            applyAttraction(GoofyParticle* particle);
+    void                            changeVelocityFromOfParams(float &perc);
     void                            changeVelocity(float perc);
     virtual void                    lastActionInsideUpdateLoop(GoofyParticle* particle);
     
@@ -42,13 +43,13 @@ public:
     bool                            followFlow;
     ofRectangle                     boundingBox;
     
-    float                           percParticleSpeed;
+    ofParameter<float>              percParticleSpeed;
     
     GoofyPerlinNoise                goofyPerlinNoise;
     GoofyFlowField                  goofyFlowField;
     vector<GoofyParticle*>          particles;
-    vector<GoofyMagneticPoint>      repellers;
-    vector<GoofyMagneticPoint>      attractors;
+    vector<GoofyMagneticPoint*>     repellers;
+    vector<GoofyMagneticPoint*>     attractors;
 
 };
 

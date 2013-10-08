@@ -28,6 +28,11 @@ void GoofyPerlinNoise::draw()
     perlinImg.draw(perlinImageRect);
 }
 
+void GoofyPerlinNoise::draw(int x, int y, int width, int height)
+{
+    perlinImg.draw(x,y,width,height);
+}
+
 float GoofyPerlinNoise::getValue(int x, int y)
 {
     return ofNoise(x * resX,y * resY,time);

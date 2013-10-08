@@ -48,7 +48,7 @@ void GoofyParticleSystem::initGoofyFlowField(GoofyFlowField &externaGoofyFlowFie
 
 void GoofyParticleSystem::addParticle(ofVec2f newPosition)
 {
-    addParticle(newPosition, ofRandom(3),0);
+    addParticle(newPosition, ofRandom(2),0);
 }
 
 void GoofyParticleSystem::addParticle(ofVec2f newPosition, float maxVelocity, long int life)
@@ -117,7 +117,7 @@ void GoofyParticleSystem::updateAndDraw()
             vItr++;
     //    }
     }
-    //removeNonActiveParticles();
+    removeNonActiveParticles();
 }
 
 void GoofyParticleSystem::lastActionInsideUpdateLoop(GoofyParticle* particle)
@@ -157,29 +157,30 @@ void GoofyParticleSystem::update()
     removeNonActiveParticles();
 }
 
-void GoofyParticleSystem::addRepeller(GoofyMagneticPoint repeller)
+void GoofyParticleSystem::addRepeller(GoofyMagneticPoint* repeller)
 {
     repellers.push_back(repeller);
 }
 
-void GoofyParticleSystem::addAttractor(GoofyMagneticPoint attractor)
+void GoofyParticleSystem::addAttractor(GoofyMagneticPoint* attractor)
 {
     attractors.push_back(attractor);
 }
 
 void GoofyParticleSystem::applyRepulsions(GoofyParticle* particle)
 {
-    vector<GoofyMagneticPoint>::iterator vItr = repellers.begin();
+    vector<GoofyMagneticPoint*>::iterator vItr = repellers.begin();
     while ( vItr != repellers.end() )
     {
-        particle->applyRepulsion((*vItr));
+        GoofyMagneticPoint* tempPointer = (*vItr);
+        particle->applyRepulsion(tempPointer);
         vItr++;
     }
 }
 
 void GoofyParticleSystem::applyAttraction(GoofyParticle* particle)
 {
-    vector<GoofyMagneticPoint>::iterator vItr = attractors.begin();
+    vector<GoofyMagneticPoint*>::iterator vItr = attractors.begin();
     while ( vItr != attractors.end() )
     {
         particle->applyAttraction((*vItr));
@@ -212,6 +213,18 @@ void GoofyParticleSystem::setBoundingBox(ofRectangle rect)
     while ( vItr != particles.end() )
     {
         (*vItr)->setBoundingBox(rect);
+        vItr++;
+    }
+}
+
+void GoofyParticleSystem::changeVelocityFromOfParams(float &perc)
+{
+    percParticleSpeed = perc;
+    vector<GoofyParticle*>::iterator vItr = particles.begin();
+    while ( vItr != particles.end() )
+    {
+        float newVel = (*vItr)->originalLimitVelocity * perc;
+        (*vItr)->limitVelocity = newVel;
         vItr++;
     }
 }
