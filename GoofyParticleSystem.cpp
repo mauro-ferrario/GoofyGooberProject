@@ -13,6 +13,7 @@ GoofyParticleSystem::GoofyParticleSystem()
 {
     moveNoise = false;
     followFlow = false;
+    bFollowTarget = true;
     percParticleSpeed = 1;
     setBoundingBox(ofRectangle(0,0, ofGetWindowWidth(), ofGetWindowHeight()));
 }
@@ -48,7 +49,7 @@ void GoofyParticleSystem::initGoofyFlowField(GoofyFlowField &externaGoofyFlowFie
 
 void GoofyParticleSystem::addParticle(ofVec2f newPosition)
 {
-    addParticle(newPosition, ofRandom(2),0);
+    addParticle(newPosition, ofRandom(8,10),0);
 }
 
 void GoofyParticleSystem::addParticle(ofVec2f newPosition, float maxVelocity, long int life)
@@ -76,7 +77,7 @@ void GoofyParticleSystem::draw()
         }
         vItr++;
     }
-    
+
     if(goofyPerlinNoise.drawPerlinImage && moveNoise)
     {
         goofyPerlinNoise.draw();
@@ -91,7 +92,7 @@ void GoofyParticleSystem::updateAndDraw()
 {
     if(moveNoise)
         goofyPerlinNoise.update();
-    
+
     vector<GoofyParticle*>::iterator vItr = particles.begin();
     while ( vItr != particles.end() )
     {
@@ -104,11 +105,14 @@ void GoofyParticleSystem::updateAndDraw()
 //        else
 //        {
         //    (*vItr)->followTarget(ofPoint(ofGetMouseX(),ofGetMouseY()));
+
+            if(bFollowTarget)
+                (*vItr)->followTarget();
             if(moveNoise)
                 (*vItr)->moveWithNoise(goofyPerlinNoise);;
             if(followFlow)
                 (*vItr)->follow(goofyFlowField);
-        
+
             applyRepulsions((*vItr));
             applyAttraction((*vItr));
             (*vItr)->update();
@@ -122,7 +126,7 @@ void GoofyParticleSystem::updateAndDraw()
 
 void GoofyParticleSystem::lastActionInsideUpdateLoop(GoofyParticle* particle)
 {
-    
+
 }
 
 void GoofyParticleSystem::update()
@@ -140,13 +144,14 @@ void GoofyParticleSystem::update()
 //        else
 //        {
     //        (*vItr)->followTarget();
-        
-        
+
+        if(bFollowTarget)
+             (*vItr)->followTarget();
         if(moveNoise)
             (*vItr)->moveWithNoise(goofyPerlinNoise);;
         if(followFlow)
             (*vItr)->follow(goofyFlowField);
-        
+
         applyRepulsions((*vItr));
         applyAttraction((*vItr));
         (*vItr)->update();

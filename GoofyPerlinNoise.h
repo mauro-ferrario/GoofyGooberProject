@@ -21,7 +21,7 @@ public:
     void                draw();
     void                draw(int x, int y, int width, int height);
     void                setPerlinImageRect(ofRectangle rect);
-    ofParameterGroup*   getParameterGroup();    
+    ofParameterGroup*   getParameterGroup();
     
     ofParameterGroup*   noiseParams;
     ofParameter<float>  resX;

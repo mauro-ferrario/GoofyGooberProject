@@ -38,13 +38,14 @@ public:
     void                            changeVelocityFromOfParams(float &perc);
     void                            changeVelocity(float perc);
     virtual void                    lastActionInsideUpdateLoop(GoofyParticle* particle);
-    
+
     bool                            moveNoise;
     bool                            followFlow;
+    bool                            bFollowTarget;
     ofRectangle                     boundingBox;
-    
+
     ofParameter<float>              percParticleSpeed;
-    
+
     GoofyPerlinNoise                goofyPerlinNoise;
     GoofyFlowField                  goofyFlowField;
     vector<GoofyParticle*>          particles;
