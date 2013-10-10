@@ -44,10 +44,10 @@ public:
     bool            active;
     bool            bCheckBoundingBox;
     bool            lifeActive;
-    static uint     count;
     int             size;
     uint            id;
     ofPoint         force;
+    static uint     count;
 };
 
 #endif
