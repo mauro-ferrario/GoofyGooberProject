@@ -37,7 +37,17 @@ void GoofyParticle::moveWithNoise(GoofyPerlinNoise &goofyPerlinNoise)
 {
     float theta = ofMap(goofyPerlinNoise.getValue(position.x, position.y),0,1,0, 2 * TWO_PI);
     ofVec2f newForce = ofVec2f(cos(theta),sin(theta)) * limitVelocity;
-    addForce(newForce);
+    force += newForce;
+    // addForce(newForce);
+}
+
+
+void GoofyParticle::moveWithNoise(GoofyPerlinNoise &goofyPerlinNoise, float _velocity)
+{
+    float theta = ofMap(goofyPerlinNoise.getValue(position.x, position.y),0,1,0, 2 * TWO_PI);
+    ofVec2f newForce = ofVec2f(cos(theta),sin(theta)) * _velocity;
+    force += newForce;
+    // addForce(newForce);
 }
 
 void GoofyParticle::follow(GoofyFlowField &flow) {
@@ -45,7 +55,8 @@ void GoofyParticle::follow(GoofyFlowField &flow) {
     desired *= limitVelocity;
     ofVec2f steer = desired - velocity;
     steer.limit(limitVelocity);
-    addForce(steer);
+    force += steer;
+    // addForce(steer);
 }
 
 void GoofyParticle::addForce(ofVec2f _force)
@@ -55,6 +66,8 @@ void GoofyParticle::addForce(ofVec2f _force)
 
 void GoofyParticle::update()
 {
+    if(!active)
+        return;
     acceleration *= .19;
     velocity += acceleration;
     position += velocity;
@@ -65,8 +78,10 @@ void GoofyParticle::update()
     if(lifeActive)
     {
         life--;
-        if(life <= 0)
-            active = false;        
+        if(life <= 0 && active)
+        {
+            active = false;
+        }
     }
 }
 

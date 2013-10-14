@@ -21,6 +21,7 @@ public:
     virtual void    update();
     virtual void    draw();
     void            moveWithNoise(GoofyPerlinNoise &goofyPerlinNoise);
+    void            moveWithNoise(GoofyPerlinNoise &goofyPerlinNoise, float _velocity);
     void            follow(GoofyFlowField &flow);
     void            setBoundingBox(ofRectangle rect);
     void            checkBoundingBox();
@@ -30,7 +31,7 @@ public:
     void            applyAttraction(GoofyMagneticPoint* repller);
     void            setTarget(ofPoint newTarget);
     
-    uint            life;
+    int             life;
     ofPoint         target;
     ofRectangle     boundingBox;
     ofVec2f         acceleration;
