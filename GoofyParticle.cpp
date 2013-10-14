@@ -38,7 +38,7 @@ void GoofyParticle::moveWithNoise(GoofyPerlinNoise &goofyPerlinNoise)
     float theta = ofMap(goofyPerlinNoise.getValue(position.x, position.y),0,1,0, 2 * TWO_PI);
     ofVec2f newForce = ofVec2f(cos(theta),sin(theta)) * limitVelocity;
     force += newForce;
-    // addForce(newForce);
+    //addForce(newForce);
 }
 
 
@@ -56,7 +56,7 @@ void GoofyParticle::follow(GoofyFlowField &flow) {
     ofVec2f steer = desired - velocity;
     steer.limit(limitVelocity);
     force += steer;
-    // addForce(steer);
+    //addForce(steer);
 }
 
 void GoofyParticle::addForce(ofVec2f _force)

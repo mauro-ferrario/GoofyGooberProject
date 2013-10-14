@@ -3,7 +3,6 @@
 //
 //  Created by xxx on 21/09/13.
 //
-//
 
 #ifndef __GoofyParticle__
 #define __GoofyParticle__
