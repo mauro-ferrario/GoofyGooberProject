@@ -11,20 +11,16 @@
 
 GoofyParticleSystem::GoofyParticleSystem()
 {
+    init();
+}
+
+void GoofyParticleSystem::init()
+{
     moveNoise = false;
     followFlow = false;
     bFollowTarget = true;
     percParticleSpeed = 1;
-    setBoundingBox(ofRectangle(0,0, ofGetWindowWidth(), ofGetWindowHeight()));
-}
-
-// Init with number of particle
-void GoofyParticleSystem::init(uint totParticle)
-{
-    for(int a = 0; a < totParticle; a++)
-    {
-        addParticle(ofVec2f(ofGetWindowWidth()*ofRandom(0,1), ofGetWindowHeight()*ofRandom(0,1)));
-    }
+    goofyPerlinNoiseForce = 1;
 }
 
 void GoofyParticleSystem::initGoofyNoise()
@@ -213,6 +209,7 @@ void GoofyParticleSystem::removeNonActiveParticles()
 
 void GoofyParticleSystem::setBoundingBox(ofRectangle rect)
 {
+    cout << "SET BOUNDING" << endl;
     boundingBox = rect;
     vector<GoofyParticle*>::iterator vItr = particles.begin();
     while ( vItr != particles.end() )

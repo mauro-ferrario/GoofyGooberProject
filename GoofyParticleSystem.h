@@ -19,7 +19,7 @@ class GoofyParticleSystem
 {
 public:
                                     GoofyParticleSystem();
-    virtual void                    init(uint totParticle);
+    virtual void                    init();
     virtual void                    addParticle(ofVec2f newPosition);
     virtual void                    addParticle(ofVec2f newPosition, float maxVelocity, long int life);
     virtual void                    draw();
@@ -45,6 +45,7 @@ public:
     ofRectangle                     boundingBox;
 
     ofParameter<float>              percParticleSpeed;
+    ofParameter<float>              goofyPerlinNoiseForce;
 
     GoofyPerlinNoise                goofyPerlinNoise;
     GoofyFlowField                  goofyFlowField;
