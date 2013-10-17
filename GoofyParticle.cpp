@@ -11,6 +11,13 @@ uint GoofyParticle::count = 0;
 
 GoofyParticle::GoofyParticle(ofVec2f position, float limitVelocity, ofColor color, float spring, float friction, long int life)
 {
+    id = GoofyParticle::count;
+    GoofyParticle::count++;
+    init(position, limitVelocity, color, spring, friction, life);
+}
+
+void GoofyParticle::init(ofVec2f position, float limitVelocity, ofColor color, float spring, float friction, long int life)
+{
     velocity.x = velocity.y = 0;
     acceleration.x = acceleration.y = 0;
     this->position = position;
@@ -22,8 +29,6 @@ GoofyParticle::GoofyParticle(ofVec2f position, float limitVelocity, ofColor colo
     bCheckBoundingBox = false;
     this->spring =  spring;
     this->friction = friction;
-    id = GoofyParticle::count;
-    GoofyParticle::count++;
     this->life = life;
     size = 1;
     if(life != 0)

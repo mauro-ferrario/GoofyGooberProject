@@ -16,6 +16,8 @@ class GoofyParticle
 {
 public:
                     GoofyParticle(ofVec2f position = ofVec2f(0,0), float limitVelocity = 10, ofColor color = 255, float spring = ofRandom(.01,.5), float friction = ofRandom(.01,.4), long int life = 0);
+    void            init(ofVec2f position = ofVec2f(0,0), float limitVelocity = 10, ofColor color = 255, float spring = ofRandom(.01,.5), float friction = ofRandom(.01,.4), long int life = 0);
+
     void            addForce(ofVec2f force);
     virtual void    update();
     virtual void    draw();
