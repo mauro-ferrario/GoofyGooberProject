@@ -43,7 +43,9 @@ public:
     bool                            followFlow;
     bool                            bFollowTarget;
     ofRectangle                     boundingBox;
-
+  
+    virtual ofParameterGroup*       getParameterGroup();
+    ofParameterGroup*               goofyParticleSystemParams;
     ofParameter<float>              percParticleSpeed;
     ofParameter<float>              goofyPerlinNoiseForce;
 

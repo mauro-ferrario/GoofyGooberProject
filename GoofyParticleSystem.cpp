@@ -23,6 +23,22 @@ void GoofyParticleSystem::init()
     goofyPerlinNoiseForce = 1;
 }
 
+ofParameterGroup* GoofyParticleSystem::getParameterGroup()
+{
+  if(!goofyParticleSystemParams)
+  {
+    goofyParticleSystemParams = new ofParameterGroup();
+  }
+  if(goofyParticleSystemParams->getName() == "")
+  {
+    goofyParticleSystemParams->setName("GoofyParticleSystem");
+    goofyParticleSystemParams->add(percParticleSpeed.set("Particlespeed", 1, 0, 10));
+    goofyParticleSystemParams->add(goofyPerlinNoiseForce.set("Goofyperlinforce", 1, 0, 10));
+    percParticleSpeed.addListener(this, &GoofyParticleSystem::changeVelocityFromOfParams);
+  }
+  return goofyParticleSystemParams;
+}
+
 void GoofyParticleSystem::initGoofyNoise()
 {
     goofyPerlinNoise.initPerlinImage(ofGetWindowWidth()/4, ofGetWindowHeight()/4, ofGetWindowWidth(), ofGetWindowHeight());
