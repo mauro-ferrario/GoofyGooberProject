@@ -9,33 +9,36 @@
 #define __GoofyPerlinNoise__
 
 #include "ofMain.h"
+#include "ofxOscParameterSync.h"
+#include "ofxGui.h"
 
 class GoofyPerlinNoise
 {
 public:
-                        GoofyPerlinNoise(float resX = .01, float resY = .01, float speed = .005);
-    void                initPerlinImage(int perliImgWidth, int perlinImgHeight, int width, int height);
-    float               getValue(int x, int y);
-    float               getValue(int x, int y, float tempResX, float tempResY);
-    void                update();
-    void                draw();
-    void                draw(int x, int y, int width, int height);
-    void                setPerlinImageRect(ofRectangle rect);
-    ofParameterGroup*   getParameterGroup();
-    
-    ofParameterGroup*   noiseParams;
-    ofParameter<float>  resX;
-    ofParameter<float>  resY;
-    ofParameter<float>  speed;
-    
-    bool                drawPerlinImage;
-    ofImage             perlinImg;
+                      GoofyPerlinNoise(float resX = .01, float resY = .01, float speed = .005);
+  void                initPerlinImage(int perliImgWidth, int perlinImgHeight, int width, int height);
+  float               getValue(int x, int y);
+  float               getValue(int x, int y, float tempResX, float tempResY);
+  void                update();
+  void                draw();
+  void                draw(int x, int y, int width, int height);
+  void                setPerlinImageRect(ofRectangle rect);
+//  void                setOSC(int localPort, string host, int remotePort);
+  ofParameterGroup*   getParameterGroup();
+  
+  ofParameterGroup*   noiseParams;
+  ofParameter<float>  resX;
+  ofParameter<float>  resY;
+  ofParameter<float>  speed;
+
+  bool                drawPerlinImage;
+  ofImage             perlinImg;
     
 private:
-    float               time;
-    int                 perlinWidth;
-    int                 perlinHeight;
-    ofRectangle         perlinImageRect;
+  float               time;
+  int                 perlinWidth;
+  int                 perlinHeight;
+  ofRectangle         perlinImageRect;
 };
 
 #endif

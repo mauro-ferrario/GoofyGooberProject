@@ -17,19 +17,24 @@ GoofyPerlinNoise::GoofyPerlinNoise(float resX, float resY, float speed)
 
 ofParameterGroup* GoofyPerlinNoise::getParameterGroup()
 {
-    if(!noiseParams)
-       {
-           noiseParams = new ofParameterGroup();
-       }
-    if(noiseParams->getName() == "")
-    {
-        noiseParams->setName("Goofy Noise");
-        noiseParams->add(resX.set("Res X",0.01,.001,.01));
-        noiseParams->add(resY.set("Res Y",0.01,.001,.01));
-        noiseParams->add(speed.set("Speed",.05,.0,.1));
-    }
-    return noiseParams;
+  if(!noiseParams)
+     {
+         noiseParams = new ofParameterGroup();
+     }
+  if(noiseParams->getName() == "")
+  {
+      noiseParams->setName("GoofyNoise");
+      noiseParams->add(resX.set("ResX",0.01,.001,.01));
+      noiseParams->add(resY.set("ResY",0.01,.001,.01));
+      noiseParams->add(speed.set("Speed",.05,.0,.1));
+  }
+  return noiseParams;
 }
+//
+//void GoofyPerlinNoise::setOSC(int localPort, string host, int remotePort)
+//{
+//  sync.setup(*noiseParams,localPort, host,remotePort);
+//}
 
 void GoofyPerlinNoise::initPerlinImage(int perlinImgWidth, int perlinImgHeight, int width, int height)
 {
@@ -66,18 +71,19 @@ void GoofyPerlinNoise::setPerlinImageRect(ofRectangle rect)
 
 void GoofyPerlinNoise::update()
 {
-    time += speed;
-    if(perlinImg.isAllocated())
+//  sync.update();
+  time += speed;
+  if(perlinImg.isAllocated())
+  {
+    unsigned char* pixels = perlinImg.getPixels();
+    for(int a = 0; a < perlinImg.width * perlinImg.height; a++)
     {
-        unsigned char* pixels = perlinImg.getPixels();
-        for(int a = 0; a < perlinImg.width * perlinImg.height; a++)
-        {
-            int x = a%perlinImg.width;
-            int y = (a-x)/perlinImg.width;
-            x = ofMap(x,0,perlinImg.width,0,perlinWidth);
-            y = ofMap(y,0,perlinImg.height,0,perlinHeight);
-            pixels[a] = getValue(x,y) * 255;
-        }
-        perlinImg.update();
+      int x = a%perlinImg.width;
+      int y = (a-x)/perlinImg.width;
+      x = ofMap(x,0,perlinImg.width,0,perlinWidth);
+      y = ofMap(y,0,perlinImg.height,0,perlinHeight);
+      pixels[a] = getValue(x,y) * 255;
     }
+    perlinImg.update();
+  }
 }
