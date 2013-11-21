@@ -225,7 +225,6 @@ void GoofyParticleSystem::removeNonActiveParticles()
 
 void GoofyParticleSystem::setBoundingBox(ofRectangle rect)
 {
-    cout << "SET BOUNDING" << endl;
     boundingBox = rect;
     vector<GoofyParticle*>::iterator vItr = particles.begin();
     while ( vItr != particles.end() )
