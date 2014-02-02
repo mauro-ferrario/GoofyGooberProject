@@ -9,14 +9,14 @@
 
 uint GoofyParticle::count = 0;
 
-GoofyParticle::GoofyParticle(ofVec2f position, float limitVelocity, ofColor color, float spring, float friction, long int life)
+GoofyParticle::GoofyParticle(ofVec3f position, float limitVelocity, ofColor color, float spring, float friction, long int life)
 {
     id = GoofyParticle::count;
     GoofyParticle::count++;
     init(position, limitVelocity, color, spring, friction, life);
 }
 
-void GoofyParticle::init(ofVec2f position, float limitVelocity, ofColor color, float spring, float friction, long int life)
+void GoofyParticle::init(ofVec3f position, float limitVelocity, ofColor color, float spring, float friction, long int life)
 {
     velocity.x = velocity.y = 0;
     acceleration.x = acceleration.y = 0;
@@ -41,7 +41,7 @@ void GoofyParticle::init(ofVec2f position, float limitVelocity, ofColor color, f
 void GoofyParticle::moveWithNoise(GoofyPerlinNoise &goofyPerlinNoise)
 {
     float theta = ofMap(goofyPerlinNoise.getValue(position.x, position.y),0,1,0, 2 * TWO_PI);
-    ofVec2f newForce = ofVec2f(cos(theta),sin(theta)) * limitVelocity;
+    ofVec3f newForce = ofVec3f(cos(theta),sin(theta)) * limitVelocity;
     force += newForce;
     //addForce(newForce);
 }
@@ -50,21 +50,21 @@ void GoofyParticle::moveWithNoise(GoofyPerlinNoise &goofyPerlinNoise)
 void GoofyParticle::moveWithNoise(GoofyPerlinNoise &goofyPerlinNoise, float _velocity)
 {
     float theta = ofMap(goofyPerlinNoise.getValue(position.x, position.y),0,1,0, 2 * TWO_PI);
-    ofVec2f newForce = ofVec2f(cos(theta),sin(theta)) * _velocity;
+    ofVec3f newForce = ofVec3f(cos(theta),sin(theta)) * _velocity;
     force += newForce;
     // addForce(newForce);
 }
 
 void GoofyParticle::follow(GoofyFlowField &flow) {
-    ofVec2f desired = flow.lookup(position);
+    ofVec3f desired = flow.lookup(position);
     desired *= limitVelocity;
-    ofVec2f steer = desired - velocity;
+    ofVec3f steer = desired - velocity;
     steer.limit(limitVelocity);
     force += steer;
     //addForce(steer);
 }
 
-void GoofyParticle::addForce(ofVec2f _force)
+void GoofyParticle::addForce(ofVec3f _force)
 {
     acceleration += _force;
 }
@@ -140,8 +140,9 @@ void GoofyParticle::applyRepulsion(GoofyMagneticPoint* repeller)
     float angleDirection = atan2(distCoord.y, distCoord.x);
 
     ofPoint rejectForce;
-    rejectForce.x = repeller->force * cos(angleDirection);
-    rejectForce.y =  repeller->force * sin(angleDirection);
+    rejectForce.y = repeller->force * cos(angleDirection);
+    rejectForce.z =  repeller->force * sin(angleDirection);
+   // rejectForce.z =
     force += rejectForce;
 }
 

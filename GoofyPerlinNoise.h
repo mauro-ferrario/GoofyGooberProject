@@ -9,8 +9,7 @@
 #define __GoofyPerlinNoise__
 
 #include "ofMain.h"
-#include "ofxOscParameterSync.h"
-#include "ofxGui.h"
+#include "ofxGUI.h"
 
 class GoofyPerlinNoise
 {
