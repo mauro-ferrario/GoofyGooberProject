@@ -18,8 +18,8 @@ GoofyParticle::GoofyParticle(ofVec2f position, float limitVelocity, ofColor colo
 
 void GoofyParticle::init(ofVec2f position, float limitVelocity, ofColor color, float spring, float friction, long int life)
 {
-    velocity.x = velocity.y = 0;
-    acceleration.x = acceleration.y = 0;
+  //  velocity.x = velocity.y = 0;
+   // acceleration.x = acceleration.y = 0;
     this->position = position;
     this->limitVelocity = limitVelocity;
     this->originalLimitVelocity = limitVelocity;
@@ -29,6 +29,8 @@ void GoofyParticle::init(ofVec2f position, float limitVelocity, ofColor color, f
     bCheckBoundingBox = false;
     this->spring =  spring;
     this->friction = friction;
+    this->friction = .83;
+    this->spring = .183;
     this->life = life;
     size = 1;
     if(life != 0)
@@ -66,18 +68,18 @@ void GoofyParticle::follow(GoofyFlowField &flow) {
 
 void GoofyParticle::addForce(ofVec2f _force)
 {
-    acceleration += _force;
+    force += _force;
 }
 
 void GoofyParticle::update()
 {
     if(!active)
         return;
-    acceleration *= .19;
-    velocity += acceleration;
-    position += velocity;
+    //acceleration *= .19;
+    //velocity += acceleration;
+   // position += velocity;
     position += force;
-    force *= .8;
+    force *= friction;
     if(bCheckBoundingBox)
         checkBoundingBox();
     if(lifeActive)
@@ -123,8 +125,11 @@ void GoofyParticle::followTarget()
 	distance = target - position;
 	float angleDirection = atan2( distance.y, distance.x);
 	ofPoint tempVector;
-	tempVector.x = cos(angleDirection) * limitVelocity;
-	tempVector.y = sin(angleDirection) * limitVelocity;
+    tempVector.x = cos(angleDirection) * abs(distance.x) * 2;// limitVelocity;
+    tempVector.y = sin(angleDirection) * abs(distance.y) * 2; // limitVelocity;
+    tempVector.x = ofClamp(tempVector.x, -limitVelocity, limitVelocity);
+    tempVector.y = ofClamp(tempVector.y, -limitVelocity, limitVelocity);
+  
     acceleration = tempVector * spring;
     acceleration *= friction;
     force += acceleration;
@@ -132,32 +137,60 @@ void GoofyParticle::followTarget()
 
 void GoofyParticle::applyRepulsion(GoofyMagneticPoint* repeller)
 {
-    float dist = this->position.distance(repeller->position);
-    if(dist > repeller->radius)
-        return;
-    
-    ofPoint distCoord = this->position -  repeller->position;
-    float angleDirection = atan2(distCoord.y, distCoord.x);
-
-    ofPoint rejectForce;
-    rejectForce.y = repeller->force * cos(angleDirection);
-    rejectForce.z =  repeller->force * sin(angleDirection);
-   // rejectForce.z =
-    force += rejectForce;
+//  cout << "Repeller pos = " << repeller->position << endl;
+  float dist = this->position.distance(repeller->position);
+  
+  if(dist > repeller->radius)
+    return;
+  
+  ofPoint distCoord = this->position -  repeller->position;
+  float angleDirection = atan2(distCoord.y, distCoord.x); //repeller.position.angle(this->position);
+  ofPoint rejectForce;
+  rejectForce.x = (repeller->force * (abs(distCoord.x)/repeller->radius)) * cos((angleDirection));
+  rejectForce.y = (repeller->force * (abs(distCoord.y)/repeller->radius)) * sin((angleDirection));
+  
+  if(repeller->limitSpeed)
+  {
+    rejectForce.x = ofClamp(rejectForce.x, -limitVelocity/4, limitVelocity/4);
+    rejectForce.y = ofClamp(rejectForce.y, -limitVelocity/4, limitVelocity/4);
+  }
+  
+  //    rejectForce *= friction;
+  //  rejectForce *= friction;
+  
+  //    if(rejectForce.x > limitVelocity)
+  //      rejectForce.x = limitVelocity;
+  //    if(rejectForce.y > limitVelocity)
+  //      rejectForce.y = limitVelocity;
+  force += rejectForce;
 }
 
 void GoofyParticle::applyAttraction(GoofyMagneticPoint* repeller)
 {
-    float dist = this->position.distance(repeller->position);
-    
-    if(dist > repeller->radius)
-        return;
-    
-    ofPoint distCoord = this->position -  repeller->position;
-    float angleDirection = atan2(distCoord.y, distCoord.x); //repeller.position.angle(this->position);
-    ofPoint rejectForce;
-    rejectForce.x = repeller->force * abs((1 - dist/repeller->radius)) * cos((angleDirection));
-    rejectForce.y = repeller->force * abs((1 - dist/repeller->radius)) * sin((angleDirection));
+  float dist = this->position.distance(repeller->position);
+  
+  if(dist > repeller->radius)
+      return;
+  
+  ofPoint distCoord = this->position -  repeller->position;
+  float angleDirection = atan2(distCoord.y, distCoord.x); //repeller.position.angle(this->position);
+  ofPoint rejectForce;
+  rejectForce.x = (repeller->force * (abs(distCoord.x)/repeller->radius)) * cos((angleDirection));
+  rejectForce.y = (repeller->force * (abs(distCoord.y)/repeller->radius)) * sin((angleDirection));
+  
+  if(repeller->limitSpeed)
+  {
+    rejectForce.x = ofClamp(rejectForce.x, -limitVelocity/4, limitVelocity/4);
+    rejectForce.y = ofClamp(rejectForce.y, -limitVelocity/4, limitVelocity/4);
+  }
+  
+//    rejectForce *= friction;
+  //  rejectForce *= friction;
+  
+//    if(rejectForce.x > limitVelocity)
+//      rejectForce.x = limitVelocity;
+//    if(rejectForce.y > limitVelocity)
+//      rejectForce.y = limitVelocity;
     force -= rejectForce;
 }
 
