@@ -20,8 +20,8 @@ class GoofyParticleSystem
 public:
                                     GoofyParticleSystem();
     virtual void                    init();
-    virtual void                    addParticle(ofVec3f newPosition);
-    virtual void                    addParticle(ofVec3f newPosition, float maxVelocity, long int life);
+    virtual void                    addParticle(ofVec2f newPosition);
+    virtual void                    addParticle(ofVec2f newPosition, float maxVelocity, long int life);
     virtual void                    draw();
     virtual void                    update();
     virtual void                    updateAndDraw();

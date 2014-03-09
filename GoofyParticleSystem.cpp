@@ -59,12 +59,12 @@ void GoofyParticleSystem::initGoofyFlowField(GoofyFlowField &externaGoofyFlowFie
     goofyFlowField = externaGoofyFlowField;
 }
 
-void GoofyParticleSystem::addParticle(ofVec3f newPosition)
+void GoofyParticleSystem::addParticle(ofVec2f newPosition)
 {
     addParticle(newPosition, ofRandom(8,10),0);
 }
 
-void GoofyParticleSystem::addParticle(ofVec3f newPosition, float maxVelocity, long int life)
+void GoofyParticleSystem::addParticle(ofVec2f newPosition, float maxVelocity, long int life)
 {
     GoofyParticle* particle = new GoofyParticle(newPosition, maxVelocity * percParticleSpeed);
     particle->position = newPosition;

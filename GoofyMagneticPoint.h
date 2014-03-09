@@ -14,7 +14,7 @@ class GoofyMagneticPoint
 {
 public:
             GoofyMagneticPoint();
-            GoofyMagneticPoint(ofVec3f position, float radius, float force);
+            GoofyMagneticPoint(ofVec2f position, float radius, float force);
     
     ofVec3f position;
     float   radius;
