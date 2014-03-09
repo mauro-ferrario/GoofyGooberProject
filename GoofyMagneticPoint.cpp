@@ -13,9 +13,10 @@ GoofyMagneticPoint::GoofyMagneticPoint()
     
 }
 
-GoofyMagneticPoint::GoofyMagneticPoint(ofVec2f position, float radius, float force)
+GoofyMagneticPoint::GoofyMagneticPoint(ofVec2f position, float radius, float force, bool limitSpeed)
 {
     this->position = position;
     this->radius = radius;
     this->force = force;
+    this->limitSpeed = limitSpeed;
 }

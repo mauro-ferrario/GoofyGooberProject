@@ -14,11 +14,12 @@ class GoofyMagneticPoint
 {
 public:
             GoofyMagneticPoint();
-            GoofyMagneticPoint(ofVec2f position, float radius, float force);
+            GoofyMagneticPoint(ofVec2f position, float radius, float force, bool limitSpeed = true);
     
-    ofVec3f position;
+    ofVec2f position;
     float   radius;
     float   force;
+    bool    limitSpeed;
 };
 
 #endif
