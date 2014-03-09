@@ -136,6 +136,14 @@ void GoofyParticleSystem::updateAndDraw()
     removeNonActiveParticles();
 }
 
+void GoofyParticleSystem::removeLastRepeller()
+{
+  GoofyMagneticPoint* tempRepeller = repellers.back();
+  repellers.pop_back();
+  tempRepeller = NULL;
+  delete tempRepeller;
+}
+
 void GoofyParticleSystem::lastActionInsideUpdateLoop(GoofyParticle* particle)
 {
 

@@ -37,6 +37,7 @@ public:
     void                            applyAttraction(GoofyParticle* particle);
     void                            changeVelocityFromOfParams(float &perc);
     void                            changeVelocity(float perc);
+    void                            removeLastRepeller();
     virtual void                    lastActionInsideUpdateLoop(GoofyParticle* particle);
 
     bool                            moveNoise;
