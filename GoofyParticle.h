@@ -35,9 +35,7 @@ public:
     int             life;
     ofPoint         target;
     ofRectangle     boundingBox;
-    ofVec2f         acceleration;
     ofVec2f         position;
-    ofVec2f         velocity;
     float           limitVelocity;
     float           originalLimitVelocity;
     float           spring;
@@ -46,6 +44,7 @@ public:
     bool            active;
     bool            bCheckBoundingBox;
     bool            lifeActive;
+    bool            bFollowTarget;
     int             size;
     uint            id;
     ofPoint         force;
