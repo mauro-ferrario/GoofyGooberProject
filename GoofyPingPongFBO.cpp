@@ -29,11 +29,11 @@ void GoofyPingPongFBO::swap()
   dst = &(FBOs[++(flag)%2]);
 }
 
-void GoofyPingPongFBO::clear()
+void GoofyPingPongFBO::clear(ofColor color)
 {
   for(int i = 0; i < 2; i++){
     FBOs[i].begin();
-    ofClear(0,255);
+    ofClear(color);
     FBOs[i].end();
   }
 }
