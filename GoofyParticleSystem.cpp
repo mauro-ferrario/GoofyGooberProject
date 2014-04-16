@@ -120,11 +120,10 @@ void GoofyParticleSystem::updateAndDraw()
 
             if(bFollowTarget)
                 (*vItr)->followTarget();
-            if(moveNoise)
+           if(moveNoise)
                 (*vItr)->moveWithNoise(goofyPerlinNoise);;
             if(followFlow)
                 (*vItr)->follow(goofyFlowField);
-
             applyRepulsions((*vItr));
             applyAttraction((*vItr));
             (*vItr)->update();

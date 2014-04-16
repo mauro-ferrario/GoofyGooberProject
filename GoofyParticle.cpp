@@ -13,6 +13,7 @@ GoofyParticle::GoofyParticle(ofVec2f position, float limitVelocity, ofColor colo
 {
     id = GoofyParticle::count;
     GoofyParticle::count++;
+    bFollowTarget = false;
     init(position, limitVelocity, color, spring, friction, life);
 }
 
@@ -27,8 +28,10 @@ void GoofyParticle::init(ofVec2f position, float limitVelocity, ofColor color, f
     bCheckBoundingBox = false;
     this->spring =  spring;
     this->friction = friction;
-    this->friction = .83;
-    this->spring = .183;
+    vector.x = ofRandom(-1,1) * limitVelocity;
+    vector.y = ofRandom(-1,1) * limitVelocity;
+    this->spring = .99;
+    this->friction = .95;
     this->life = life;
     size = 1;
     if(life != 0)
@@ -43,7 +46,6 @@ void GoofyParticle::moveWithNoise(GoofyPerlinNoise &goofyPerlinNoise)
     float theta = ofMap(goofyPerlinNoise.getValue(position.x, position.y),0,1,0, 2 * TWO_PI);
     ofVec2f newForce = ofVec2f(cos(theta),sin(theta)) * limitVelocity;
     force += newForce;
-    //addForce(newForce);
 }
 
 
@@ -52,7 +54,6 @@ void GoofyParticle::moveWithNoise(GoofyPerlinNoise &goofyPerlinNoise, float _vel
     float theta = ofMap(goofyPerlinNoise.getValue(position.x, position.y),0,1,0, 2 * TWO_PI);
     ofVec2f newForce = ofVec2f(cos(theta),sin(theta)) * _velocity;
     force += newForce;
-    // addForce(newForce);
 }
 
 void GoofyParticle::follow(GoofyFlowField &flow) {
@@ -61,20 +62,37 @@ void GoofyParticle::follow(GoofyFlowField &flow) {
     ofVec2f steer = desired - limitVelocity;
     steer.limit(limitVelocity);
     force += steer;
-    //addForce(steer);
 }
 
+
+void GoofyParticle::addForce(ofVec2f &vector,ofVec2f &force)
+{
+	if(force.x == 0 && force.y == 0) return;
+	vector += force;
+	this->force  *= .09;
+}
+
+/*
 void GoofyParticle::addForce(ofVec2f _force)
 {
-    force += _force;
+  force += _force;
+  vector += force;
+  force *= .09;
 }
 
+ */
 void GoofyParticle::update()
 {
     if(!active)
         return;
+<<<<<<< HEAD
     position += force;
     force *= friction;
+=======
+   // position += force;
+   // force *= friction;
+    position += vector;
+>>>>>>> FETCH_HEAD
     if(bCheckBoundingBox)
         checkBoundingBox();
     if(lifeActive)
@@ -115,6 +133,7 @@ void GoofyParticle::checkBoundingBox()
 
 void GoofyParticle::followTarget()
 {
+<<<<<<< HEAD
   /*
   Simple spring, abbreviated form:
   vx += (targetX - sprite.x) * spring;
@@ -125,48 +144,42 @@ void GoofyParticle::followTarget()
   sprite.y += vy;
   */
     ofPoint distance;
+=======
+  ofPoint distance;
+>>>>>>> FETCH_HEAD
 	ofPoint	acceleration(0);
 	distance = target - position;
 	float angleDirection = atan2( distance.y, distance.x);
-	ofPoint tempVector;
-    tempVector.x = cos(angleDirection) * abs(distance.x) * 2;// limitVelocity;
-    tempVector.y = sin(angleDirection) * abs(distance.y) * 2; // limitVelocity;
-    tempVector.x = ofClamp(tempVector.x, -limitVelocity, limitVelocity);
-    tempVector.y = ofClamp(tempVector.y, -limitVelocity, limitVelocity);
-  
-    acceleration = tempVector * spring;
-    acceleration *= friction;
-    force += acceleration;
+	ofVec2f tempVector;
+  tempVector.x = cos(angleDirection) * limitVelocity;
+  tempVector.y = sin(angleDirection) * limitVelocity;
+  addForce(tempVector, force);
+  acceleration = (tempVector) * spring;
+  vector += acceleration;
+  vector *= friction;
 }
 
 void GoofyParticle::applyRepulsion(GoofyMagneticPoint* repeller)
 {
 //  cout << "Repeller pos = " << repeller->position << endl;
-  float dist = this->position.distance(repeller->position);
+  float dist = this->position.distance(repeller->position); // Questa potrebbe essere la distanza dal target e non dalla posizione attuale, dipende cosa bisogna fare
   
   if(dist > repeller->radius)
     return;
   
   ofPoint distCoord = this->position -  repeller->position;
   float angleDirection = atan2(distCoord.y, distCoord.x); //repeller.position.angle(this->position);
-  ofPoint rejectForce;
-  rejectForce.x = (repeller->force * (abs(distCoord.x)/repeller->radius)) * cos((angleDirection));
-  rejectForce.y = (repeller->force * (abs(distCoord.y)/repeller->radius)) * sin((angleDirection));
+  ofVec2f rejectForce;
+  rejectForce.x = repeller->force * cos(angleDirection); // * (abs(distCoord.x)/repeller->radius))
+  rejectForce.y = repeller->force * sin(angleDirection); // * (abs(distCoord.y)/repeller->radius))
   
   if(repeller->limitSpeed)
   {
-    rejectForce.x = ofClamp(rejectForce.x, -limitVelocity/4, limitVelocity/4);
-    rejectForce.y = ofClamp(rejectForce.y, -limitVelocity/4, limitVelocity/4);
+    rejectForce.x = ofClamp(rejectForce.x, -limitVelocity, limitVelocity);
+    rejectForce.y = ofClamp(rejectForce.y, -limitVelocity, limitVelocity);
   }
-  
-  //    rejectForce *= friction;
-  //  rejectForce *= friction;
-  
-  //    if(rejectForce.x > limitVelocity)
-  //      rejectForce.x = limitVelocity;
-  //    if(rejectForce.y > limitVelocity)
-  //      rejectForce.y = limitVelocity;
-  force += rejectForce;
+  //addForce(rejectForce, force);
+  vector += rejectForce;
 }
 
 void GoofyParticle::applyAttraction(GoofyMagneticPoint* attractor)
@@ -182,6 +195,7 @@ void GoofyParticle::applyAttraction(GoofyMagneticPoint* attractor)
   attractionForce.x = (attractor->force * (abs(distCoord.x)/attractor->radius)) * cos((angleDirection));
   attractionForce.y = (attractor->force * (abs(distCoord.y)/attractor->radius)) * sin((angleDirection));
   attractionForce /= 10;
+<<<<<<< HEAD
 
 //  if(repeller->limitSpeed)
 //  {
@@ -189,6 +203,9 @@ void GoofyParticle::applyAttraction(GoofyMagneticPoint* attractor)
 //    rejectForce.y = ofClamp(rejectForce.y, -limitVelocity/4, limitVelocity/4);
 //  }
   force -= attractionForce;
+=======
+  vector -= attractionForce;
+>>>>>>> FETCH_HEAD
 }
 
 void GoofyParticle::followTarget(ofPoint target)

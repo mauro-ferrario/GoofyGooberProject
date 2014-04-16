@@ -18,7 +18,8 @@ public:
                     GoofyParticle(ofVec2f position = ofVec2f(0,0), float limitVelocity = 10, ofColor color = 255, float spring = ofRandom(.01,.5), float friction = ofRandom(.01,.4), long int life = 0);
     void            init(ofVec2f position = ofVec2f(0,0), float limitVelocity = 10, ofColor color = 255, float spring = ofRandom(.01,.5), float friction = ofRandom(.01,.4), long int life = 0);
 
-    void            addForce(ofVec2f force);
+   // void            addForce(ofVec2f force);
+  void    addForce(ofVec2f &vector,ofVec2f &force);
     virtual void    update();
     virtual void    draw();
     void            moveWithNoise(GoofyPerlinNoise &goofyPerlinNoise);
@@ -36,6 +37,10 @@ public:
     ofPoint         target;
     ofRectangle     boundingBox;
     ofVec2f         position;
+<<<<<<< HEAD
+=======
+  ofVec2f           vector;
+>>>>>>> FETCH_HEAD
     float           limitVelocity;
     float           originalLimitVelocity;
     float           spring;
@@ -44,9 +49,10 @@ public:
     bool            active;
     bool            bCheckBoundingBox;
     bool            lifeActive;
+    bool            bFollowTarget;
     int             size;
     uint            id;
-    ofPoint         force;
+    ofVec2f         force;
     static uint     count;
 };
 

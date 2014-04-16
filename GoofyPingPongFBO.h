@@ -29,6 +29,10 @@ public:
   void allocate( int _width, int _height, int _internalformat = GL_RGBA, float _dissipation = 1.0f);
   void swap();
   void clear(ofColor color = ofColor(0,255));
+<<<<<<< HEAD
+=======
+  
+>>>>>>> FETCH_HEAD
   ofFbo& operator[]( int n );
   ofFbo   *src;       // Source       ->  Ping
   ofFbo   *dst;       // Destination  ->  Pong
