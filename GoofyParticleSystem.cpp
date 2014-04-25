@@ -166,8 +166,8 @@ void GoofyParticleSystem::update()
 
         if(bFollowTarget)
              (*vItr)->followTarget();
-        if(moveNoise)
-            (*vItr)->moveWithNoise(goofyPerlinNoise);;
+       // if(moveNoise)
+       //     (*vItr)->moveWithNoise(goofyPerlinNoise);;
         if(followFlow)
             (*vItr)->follow(goofyFlowField);
 
