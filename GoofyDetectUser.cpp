@@ -27,7 +27,7 @@ void GoofyDetectUser::setup(bool _useBodyShape, int width, int height)
   openNIDevice.setRegister(true);
   openNIDevice.setMirror(true);
   openNIDevice.addUserGenerator();
-  openNIDevice.setUserSmoothing(true);
+  openNIDevice.setUserSmoothing(1);
   openNIDevice.setMaxNumUsers(1);
   openNIDevice.setUseMaskTextureAllUsers(true);
   
@@ -212,6 +212,9 @@ void GoofyDetectUser::saveImage(string newName)
 
 void GoofyDetectUser::convertTransparentPixelIntoWhitePixel(ofImage& _img)
 {
+  if(_img.getPixelsRef().getImageType() != OF_IMAGE_COLOR_ALPHA)
+    return;
+  
   unsigned char* pixels = _img.getPixels();
   int totPixel = _img.getWidth() * _img.getHeight();
   for(int a = 0; a < totPixel; a++)
