@@ -137,6 +137,18 @@ void GoofyDetectUser::checkBlobPosition()
 
 void GoofyDetectUser::draw()
 {
+  ofPushMatrix();
+  
+  //if(userImage.isAllocated())
+  //gray.setFromPixels(userImage.getPixels(), userImage.width, userImage.height);
+  //  gray.setFromPixels(userImage.getPixelsRef());
+  grayImage.updateTexture();
+  ofSetColor(255);
+  grayImage.draw(200, 0);
+  
+  ofPopMatrix();
+
+  
   ofPushStyle();
   ofSetColor(255);
   if(!activeDetetion)
@@ -145,6 +157,12 @@ void GoofyDetectUser::draw()
   ofPushMatrix();
   ofTranslate(-20, -8);
   openNIDevice.drawDepth();
+  
+  ofxCvGrayscaleImage gray;
+  
+  
+  bool userFound = false;
+  
   if(useBodyShape)
   {
     int numUsers = openNIDevice.getNumTrackedUsers();
@@ -152,6 +170,8 @@ void GoofyDetectUser::draw()
     {
       ofxOpenNIUser & user = openNIDevice.getTrackedUser(i);
       user.drawMask();
+      gray.setFromPixels(user.getMaskPixels());
+      userFound = true;
     }
   }
   
@@ -175,6 +195,7 @@ void GoofyDetectUser::draw()
   
   ofPopMatrix();
   ofPopMatrix();
+  
   
   ofPopStyle();
 }
