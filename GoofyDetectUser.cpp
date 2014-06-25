@@ -40,6 +40,28 @@ void GoofyDetectUser::setup(bool _useBodyShape, int width, int height)
   this->width             = width;
   this->height            = height;
   grayImage.allocate(width, height);
+  initFrameBuffer(width, height, changedFbo);
+  changedFbo.begin();
+  ofSetColor(255,0,0);
+  ofRect(0,0,width, height);
+  changedFbo.end();
+  flowSolver.setup(width, height, 0.35, 5, 10, 1, 3, 2.25, false, false);
+  opticalFlowResolution = 10;
+  activeOpticalFlow = false;
+  ofLog(OF_LOG_SILENT);
+  
+  
+  filterDepthShader.load("filterDepthShader.vert", "filterDepthShader.frag");
+  initFrameBuffer(width, height, filterDepthFbo);
+  
+}
+
+void GoofyDetectUser::initFrameBuffer(int width, int height, ofFbo& fb)
+{
+  fb.allocate(width, height, GL_RGBA32F);
+  fb.begin();
+  ofClear(0, 0, 0 ,255);
+  fb.end();
 }
 
 ofParameterGroup* GoofyDetectUser::getParameterGroup()
@@ -52,17 +74,22 @@ ofParameterGroup* GoofyDetectUser::getParameterGroup()
     arboretumDetectParams->add(sendImage.set("Send Image", sendImage));
     arboretumDetectParams->add(activeDetetion.set("Active Detection", activeDetetion));
     arboretumDetectParams->add(activeOpenCV.set("Check Blob Position", true));
+    arboretumDetectParams->add(smoothSpeed.set("Smooth speed", smoothSpeed, 1, 160));
     if(!useBodyShape)
     {
       arboretumDetectParams->add(nearThreshold.set("Near Threshold", nearThreshold, 0, 10000));
       arboretumDetectParams->add(farThreshold.set("Far Threshold", farThreshold, 0, 10000));
     }
   }
+  arboretumDetectParams->add(flowSolver.sumVelLimit.set("Sum vel limit", 1000, 0, 10000));
+  arboretumDetectParams->add(opticalFlowResolution.set("OpticalFlowResolution", 10, 1, 300));
   return arboretumDetectParams;
 }
 
 void GoofyDetectUser::update()
 {
+  
+  filterDepthShader.load("filterDepthShader.vert", "filterDepthShader.frag");
   if(!activeDetetion)
     return;
   openNIDevice.update();
@@ -79,6 +106,26 @@ void GoofyDetectUser::update()
     sendImage = false;
     saveImage();
   }
+  
+//  ofPixels pixels;
+//  filterDepthFbo.readToPixels(pixels);
+  
+  flowSolver.update(userImage.getPixelsRef().getPixels(), userImage.getWidth(), userImage.getHeight(), userImage.getPixelsRef().getImageType());
+  flowSolver.drawColored(640, 480, 10, opticalFlowResolution);
+//
+//  cout << "sum vel " << flowSolver.sumVel << endl;
+//  
+  if(flowSolver.imageChanged)
+  {
+    changedFbo.begin();
+    ofClear(0,0,0,255);
+    ofSetColor(255);
+    userImage.draw(0,0);
+    changedFbo.end();
+  }
+  ofPixels pixels;
+  changedFbo.readToPixels(pixels);
+  changedImage.setFromPixels(pixels.getPixels(), pixels.getWidth(), pixels.getHeight(), pixels.getImageType());
 }
 
 void GoofyDetectUser::updateWithUser()
@@ -117,11 +164,22 @@ void GoofyDetectUser::checkBlobPosition(ofxOpenNIUser &user)
 
 void GoofyDetectUser::updateWithoutUser()
 {
+  filterDepthFbo.begin();
+  ofClear(0,0,0,255);
+  filterDepthShader.begin();
+  filterDepthShader.setUniform1f("nearThreshold", nearThreshold);
+  filterDepthShader.setUniform1f("farThreshold", farThreshold);
+  filterDepthShader.setUniformTexture("depthImage", openNIDevice.getDepthTextureReference(), 1);
+  openNIDevice.drawDepth();
+  filterDepthShader.end();
+  filterDepthFbo.end();
+  
   ofxOpenNIDepthThreshold depthThreshold = openNIDevice.getDepthThreshold(0);
   ofPixels pixels = depthThreshold.getMaskPixels();
+//  filterDepthFbo.readToPixels(pixels);
   if(depthThreshold.getMaskPixels().getWidth() != 0)
   {
-    userImage.setFromPixels(&pixels[0], width, height, OF_IMAGE_GRAYSCALE);
+    userImage.setFromPixels(&pixels[0], width, height, depthThreshold.getMaskPixels().getImageType());
     userImage.update();
     if(activeOpenCV)
       checkBlobPosition();
@@ -138,7 +196,6 @@ void GoofyDetectUser::checkBlobPosition()
 void GoofyDetectUser::draw()
 {
   ofPushMatrix();
-  
   //if(userImage.isAllocated())
   //gray.setFromPixels(userImage.getPixels(), userImage.width, userImage.height);
   //  gray.setFromPixels(userImage.getPixelsRef());
@@ -153,11 +210,13 @@ void GoofyDetectUser::draw()
   ofSetColor(255);
   if(!activeDetetion)
     return;
+  
   drawBorderBox(0,0);
   ofPushMatrix();
   ofTranslate(-20, -8);
+  //ofScale(2,2);
   openNIDevice.drawDepth();
-  
+  filterDepthFbo.draw(800,0, width, height);
   ofxCvGrayscaleImage gray;
   
   
@@ -175,7 +234,9 @@ void GoofyDetectUser::draw()
     }
   }
   
-  ofTranslate(0,480);
+  
+  
+  ofTranslate(0,500);
   drawBorderBox(20,22);
   
   if(userImage.isAllocated())
@@ -183,8 +244,8 @@ void GoofyDetectUser::draw()
     ofRect(20,34,userImage.width-2, userImage.height-2);
     userImage.draw(20,34,userImage.width-2, userImage.height-2);
   }
-
-  ofPushMatrix();
+  
+  
   ofTranslate(20,34);
 
   if(activeOpenCV)
@@ -193,10 +254,16 @@ void GoofyDetectUser::draw()
   if(useBodyShape)
     openNIDevice.drawSkeletons();
   
-  ofPopMatrix();
-  ofPopMatrix();
+  ofTranslate(-20,-34);
+  ofSetColor(255);
   
+  ofTranslate(0, 515);
+  changedFbo.draw(20,22, 640, 480);
+  drawBorderBox(20,22);
+  ofDrawBitmapString("Stable image\nwith optical flow", ofPoint(65,75));
   
+  ofPopMatrix();
+
   ofPopStyle();
 }
 

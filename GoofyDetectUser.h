@@ -12,6 +12,7 @@
 #include "ofMain.h"
 #include "ofxOpenNI.h"
 #include "ofxOpenCv.h"
+#include "ofxOpticalFlowFarneback.h"
 //#include "ofxOsc.h"
 
 class GoofyDetectUser
@@ -46,6 +47,17 @@ public:
   ofParameter<float>      nearThreshold;
   ofParameter<float>      farThreshold;
   ofParameter<bool>       sendImage;
+  ofParameter<float>      smoothSpeed;
+  ofParameter<int>        opticalFlowResolution;
+  ofParameter<bool>       activeOpticalFlow;
+  ofxOpticalFlowFarneback flowSolver;
+  void              initFrameBuffer(int width, int height, ofFbo& fb);
+  ofFbo             changedFbo;
+  ofImage           changedImage;
+  
+  ofShader            filterDepthShader;
+  ofFbo               filterDepthFbo;
+  
 };
 
 #endif
