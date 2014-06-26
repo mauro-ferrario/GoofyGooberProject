@@ -51,10 +51,12 @@ void GoofyDetectUser::setup(bool _useBodyShape, int width, int height)
   activeOpticalFlow = false;
   ofLog(OF_LOG_SILENT);
   
+  substractionShader.load("backgroundSubstraciton.vert","backgroundSubstraciton.frag");
   
   filterDepthShader.load("filterDepthShader.vert", "filterDepthShader.frag");
   initFrameBuffer(width, height, filterDepthFbo);
-  
+  initFrameBuffer(width, height, backgroundFbo);
+  initFrameBuffer(width, height, substractionFbo);
 }
 
 void GoofyDetectUser::initFrameBuffer(int width, int height, ofFbo& fb)
@@ -63,6 +65,14 @@ void GoofyDetectUser::initFrameBuffer(int width, int height, ofFbo& fb)
   fb.begin();
   ofClear(0, 0, 0 ,255);
   fb.end();
+}
+
+void GoofyDetectUser::setBackground()
+{
+  cout << "Save background" << endl;
+  backgroundFbo.begin();
+  openNIDevice.drawImage();
+  backgroundFbo.end();
 }
 
 ofParameterGroup* GoofyDetectUser::getParameterGroup()
@@ -88,10 +98,24 @@ ofParameterGroup* GoofyDetectUser::getParameterGroup()
 
 void GoofyDetectUser::update()
 {
+  substractionShader.load("backgroundSubstraciton.vert","backgroundSubstraciton.frag");
+  substractionFbo.begin();
+  substractionShader.begin();
+  substractionShader.setUniformTexture("background", backgroundFbo.getTextureReference(), 0);
+  substractionShader.setUniformTexture("original", openNIDevice.getimageTextureReference(), 1);
+  backgroundFbo.draw(0,0);
+  substractionShader.end();
+  substractionFbo.end();
+  ofPixels pixels;
+  substractionFbo.readToPixels(pixels);
+  substractionImage.setFromPixels(&pixels[0], width, height, OF_IMAGE_COLOR_ALPHA);
+  substractionImage.update();
+  
   filterDepthShader.load("filterDepthShader.vert", "filterDepthShader.frag");
+  openNIDevice.update();
   if(!activeDetetion)
     return;
-  openNIDevice.update();
+  
   if(useBodyShape)
     updateWithUser();
   else
@@ -106,7 +130,7 @@ void GoofyDetectUser::update()
     saveImage();
   }
   
-  ofPixels pixels = openNIDevice.getImagePixels();
+  pixels = openNIDevice.getImagePixels();
   // Questo fa rallentare
   flowSolver.update(pixels.getPixels(), pixels.getWidth(), pixels.getHeight(), pixels.getImageType());
   flowSolver.drawColored(640, 480, 10, opticalFlowResolution);
@@ -139,6 +163,7 @@ void GoofyDetectUser::update()
   openNIDevice.drawDepth();
   filterDepthShader.end();
   filterDepthFbo.end();
+  
 }
 
 void GoofyDetectUser::updateWithUser()
@@ -249,6 +274,10 @@ void GoofyDetectUser::draw()
   ofSetColor(255);
   openNIDevice.drawImage();
   //flowSolver.drawColored(640, 480, 10, opticalFlowResolution);
+  
+  
+  ofTranslate(0, 510);
+  substractionFbo.draw(0,0);
   
   ofPopMatrix();
   
