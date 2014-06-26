@@ -47,12 +47,12 @@ public:
   ofParameter<float>      nearThreshold;
   ofParameter<float>      farThreshold;
   ofParameter<bool>       sendImage;
-  ofParameter<float>      smoothSpeed;
   ofParameter<int>        opticalFlowResolution;
   ofParameter<bool>       activeOpticalFlow;
   ofxOpticalFlowFarneback flowSolver;
   void              initFrameBuffer(int width, int height, ofFbo& fb);
   ofFbo             changedFbo;
+  ofFbo             depthStableFbo;
   ofImage           changedImage;
   
   ofShader            filterDepthShader;

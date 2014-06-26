@@ -41,6 +41,7 @@ void GoofyDetectUser::setup(bool _useBodyShape, int width, int height)
   this->height            = height;
   grayImage.allocate(width, height);
   initFrameBuffer(width, height, changedFbo);
+  initFrameBuffer(width, height, depthStableFbo);
   changedFbo.begin();
   ofSetColor(255,0,0);
   ofRect(0,0,width, height);
@@ -74,7 +75,6 @@ ofParameterGroup* GoofyDetectUser::getParameterGroup()
     arboretumDetectParams->add(sendImage.set("Send Image", sendImage));
     arboretumDetectParams->add(activeDetetion.set("Active Detection", activeDetetion));
     arboretumDetectParams->add(activeOpenCV.set("Check Blob Position", true));
-    arboretumDetectParams->add(smoothSpeed.set("Smooth speed", smoothSpeed, 1, 160));
     if(!useBodyShape)
     {
       arboretumDetectParams->add(nearThreshold.set("Near Threshold", nearThreshold, 0, 10000));
@@ -88,7 +88,6 @@ ofParameterGroup* GoofyDetectUser::getParameterGroup()
 
 void GoofyDetectUser::update()
 {
-  
   filterDepthShader.load("filterDepthShader.vert", "filterDepthShader.frag");
   if(!activeDetetion)
     return;
@@ -107,14 +106,11 @@ void GoofyDetectUser::update()
     saveImage();
   }
   
-//  ofPixels pixels;
-//  filterDepthFbo.readToPixels(pixels);
-  
-  flowSolver.update(userImage.getPixelsRef().getPixels(), userImage.getWidth(), userImage.getHeight(), userImage.getPixelsRef().getImageType());
+  ofPixels pixels = openNIDevice.getImagePixels();
+  // Questo fa rallentare
+  flowSolver.update(pixels.getPixels(), pixels.getWidth(), pixels.getHeight(), pixels.getImageType());
   flowSolver.drawColored(640, 480, 10, opticalFlowResolution);
-//
-//  cout << "sum vel " << flowSolver.sumVel << endl;
-//  
+
   if(flowSolver.imageChanged)
   {
     changedFbo.begin();
@@ -122,10 +118,27 @@ void GoofyDetectUser::update()
     ofSetColor(255);
     userImage.draw(0,0);
     changedFbo.end();
+    
+    depthStableFbo.begin();
+    ofClear(0,0,0,255);
+    ofSetColor(255);
+    openNIDevice.drawDepth(0, 0);
+    depthStableFbo.end();
   }
-  ofPixels pixels;
+  
   changedFbo.readToPixels(pixels);
   changedImage.setFromPixels(pixels.getPixels(), pixels.getWidth(), pixels.getHeight(), pixels.getImageType());
+  
+  
+  filterDepthFbo.begin();
+  ofClear(0,0,0,255);
+  filterDepthShader.begin();
+  filterDepthShader.setUniform1f("nearThreshold", nearThreshold);
+  filterDepthShader.setUniform1f("farThreshold", farThreshold);
+  filterDepthShader.setUniformTexture("depthImage", depthStableFbo.getTextureReference(), 1);
+  openNIDevice.drawDepth();
+  filterDepthShader.end();
+  filterDepthFbo.end();
 }
 
 void GoofyDetectUser::updateWithUser()
@@ -164,19 +177,8 @@ void GoofyDetectUser::checkBlobPosition(ofxOpenNIUser &user)
 
 void GoofyDetectUser::updateWithoutUser()
 {
-  filterDepthFbo.begin();
-  ofClear(0,0,0,255);
-  filterDepthShader.begin();
-  filterDepthShader.setUniform1f("nearThreshold", nearThreshold);
-  filterDepthShader.setUniform1f("farThreshold", farThreshold);
-  filterDepthShader.setUniformTexture("depthImage", openNIDevice.getDepthTextureReference(), 1);
-  openNIDevice.drawDepth();
-  filterDepthShader.end();
-  filterDepthFbo.end();
-  
   ofxOpenNIDepthThreshold depthThreshold = openNIDevice.getDepthThreshold(0);
   ofPixels pixels = depthThreshold.getMaskPixels();
-//  filterDepthFbo.readToPixels(pixels);
   if(depthThreshold.getMaskPixels().getWidth() != 0)
   {
     userImage.setFromPixels(&pixels[0], width, height, depthThreshold.getMaskPixels().getImageType());
@@ -195,80 +197,84 @@ void GoofyDetectUser::checkBlobPosition()
 
 void GoofyDetectUser::draw()
 {
-  ofPushMatrix();
-  //if(userImage.isAllocated())
-  //gray.setFromPixels(userImage.getPixels(), userImage.width, userImage.height);
-  //  gray.setFromPixels(userImage.getPixelsRef());
-  grayImage.updateTexture();
-  ofSetColor(255);
-  grayImage.draw(200, 0);
-  
-  ofPopMatrix();
-
-  
-  ofPushStyle();
   ofSetColor(255);
   if(!activeDetetion)
     return;
   
-  drawBorderBox(0,0);
   ofPushMatrix();
-  ofTranslate(-20, -8);
-  //ofScale(2,2);
+  
+  drawBorderBox(0,0);
   openNIDevice.drawDepth();
-  filterDepthFbo.draw(800,0, width, height);
-  ofxCvGrayscaleImage gray;
+  ofDrawBitmapString("Depth Image", ofPoint(25,58));
   
+  ofPushMatrix();
+  ofTranslate(640,0);
+  depthStableFbo.draw(0,0, 640, 480);
+  drawBorderBox(0,0);
+  ofDrawBitmapString("Stable Depth Image", ofPoint(25,58));
   
-  bool userFound = false;
+  ofPushMatrix();
+  ofTranslate(640,0);
+  filterDepthFbo.draw(0,0, 640, 480);
+  drawBorderBox(0,0);
+  ofDrawBitmapString("Filter Depth\nStable Image", ofPoint(25,58));
+  ofPopMatrix();
   
-  if(useBodyShape)
-  {
-    int numUsers = openNIDevice.getNumTrackedUsers();
-    for (int i = 0; i < numUsers; i++)
-    {
-      ofxOpenNIUser & user = openNIDevice.getTrackedUser(i);
-      user.drawMask();
-      gray.setFromPixels(user.getMaskPixels());
-      userFound = true;
-    }
-  }
+  ofPopMatrix();
   
-  
-  
-  ofTranslate(0,500);
-  drawBorderBox(20,22);
-  
+  ofTranslate(0, 510);
+  drawBorderBox(0,0);
   if(userImage.isAllocated())
   {
-    ofRect(20,34,userImage.width-2, userImage.height-2);
-    userImage.draw(20,34,userImage.width-2, userImage.height-2);
+    ofRect(0,0,userImage.width-2, userImage.height-2);
+    userImage.draw(0,0,userImage.width-2, userImage.height-2);
   }
   
-  
-  ofTranslate(20,34);
-
   if(activeOpenCV)
-      drawContourFinder();
+    drawContourFinder();
   
   if(useBodyShape)
     openNIDevice.drawSkeletons();
   
-  ofTranslate(-20,-34);
-  ofSetColor(255);
+  ofDrawBitmapString("User Image", ofPoint(25,58));
   
-  ofTranslate(0, 515);
-  changedFbo.draw(20,22, 640, 480);
-  drawBorderBox(20,22);
-  ofDrawBitmapString("Stable image\nwith optical flow", ofPoint(65,75));
+  
+  
+  ofTranslate(0, 510);
+  changedFbo.draw(0,0, 640, 480);
+  drawBorderBox(0,0);
+  ofDrawBitmapString("Stable image\nwith optical flow", ofPoint(25,58));
+  
+  ofTranslate(0, 510);
+  ofSetColor(255);
+  openNIDevice.drawImage();
+  //flowSolver.drawColored(640, 480, 10, opticalFlowResolution);
   
   ofPopMatrix();
-
-  ofPopStyle();
+  
+//
+//  filterDepthFbo.draw(800,0, width, height);
+//  ofxCvGrayscaleImage gray;
+//  
+//  
+//  bool userFound = false;
+//  
+//  if(useBodyShape)
+//  {
+//    int numUsers = openNIDevice.getNumTrackedUsers();
+//    for (int i = 0; i < numUsers; i++)
+//    {
+//      ofxOpenNIUser & user = openNIDevice.getTrackedUser(i);
+//      user.drawMask();
+//      gray.setFromPixels(user.getMaskPixels());
+//      userFound = true;
+//    }
+//  }
 }
 
 void GoofyDetectUser::drawContourFinder()
 {
+  ofPushStyle();
   for (int i = 0; i < contourFinder.nBlobs; i++)
   {
     ofNoFill();
@@ -276,6 +282,7 @@ void GoofyDetectUser::drawContourFinder()
     ofFill();
     ofCircle(contourFinder.blobs[i].centroid,10);
   }
+  ofPopStyle();
 }
 
 void GoofyDetectUser::drawBorderBox(int x, int y)
