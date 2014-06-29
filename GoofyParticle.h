@@ -15,10 +15,10 @@
 class GoofyParticle
 {
 public:
-                    GoofyParticle(ofVec2f position = ofVec2f(0,0), float limitVelocity = 10, ofColor color = 255, float spring = ofRandom(.01,.5), float friction = ofRandom(.01,.4), long int life = 0);
-    void            init(ofVec2f position = ofVec2f(0,0), float limitVelocity = 10, ofColor color = 255, float spring = ofRandom(.01,.5), float friction = ofRandom(.01,.4), long int life = 0);
+                    GoofyParticle(ofVec3f position = ofVec3f(0,0), float limitVelocity = 10, ofColor color = 255, float spring = ofRandom(.01,.5), float friction = ofRandom(.01,.4), long int life = 0);
+    void            init(ofVec3f position = ofVec3f(0,0), float limitVelocity = 10, ofColor color = 255, float spring = ofRandom(.01,.5), float friction = ofRandom(.01,.4), long int life = 0);
 
-    void            addForce(ofVec2f force);
+    void            addForce(ofVec3f force);
     virtual void    update();
     virtual void    draw();
     void            moveWithNoise(GoofyPerlinNoise &goofyPerlinNoise);
@@ -35,7 +35,7 @@ public:
     int             life;
     ofPoint         target;
     ofRectangle     boundingBox;
-    ofVec2f         position;
+    ofVec3f         position;
     float           limitVelocity;
     float           originalLimitVelocity;
     float           spring;

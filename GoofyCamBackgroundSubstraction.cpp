@@ -9,6 +9,7 @@
 #include "GoofyCamBackgroundSubstraction.h"
 
 
+
 GoofyCamBackgroundSubstraction::GoofyCamBackgroundSubstraction()
 {
   
@@ -34,6 +35,10 @@ void GoofyCamBackgroundSubstraction::update()
   cam.update();
   if (cam.isFrameNew())
   {
+    if(activeOpticalFlow)
+    {
+      // Bisogna aggiungere il codice per usare l'optical flow
+    }
     substractionShader.load("backgroundSubstraciton.vert","backgroundSubstraciton.frag");
     substractionFbo.begin();
     substractionShader.begin();

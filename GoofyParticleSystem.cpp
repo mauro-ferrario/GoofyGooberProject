@@ -59,12 +59,12 @@ void GoofyParticleSystem::initGoofyFlowField(GoofyFlowField &externaGoofyFlowFie
     goofyFlowField = externaGoofyFlowField;
 }
 
-void GoofyParticleSystem::addParticle(ofVec2f newPosition)
+GoofyParticle* GoofyParticleSystem::addParticle(ofVec3f newPosition)
 {
-    addParticle(newPosition, ofRandom(8,10),0);
+    return addParticle(newPosition, ofRandom(8,10),0);
 }
 
-void GoofyParticleSystem::addParticle(ofVec2f newPosition, float maxVelocity, long int life)
+GoofyParticle* GoofyParticleSystem::addParticle(ofVec3f newPosition, float maxVelocity, long int life)
 {
     GoofyParticle* particle = new GoofyParticle(newPosition, maxVelocity * percParticleSpeed);
     particle->position = newPosition;
@@ -76,6 +76,7 @@ void GoofyParticleSystem::addParticle(ofVec2f newPosition, float maxVelocity, lo
         particle->lifeActive = true;
     }
     particles.push_back(particle);
+  return particle;
 }
 
 void GoofyParticleSystem::draw()
@@ -121,18 +122,73 @@ void GoofyParticleSystem::updateAndDraw()
             if(bFollowTarget)
                 (*vItr)->followTarget();
            if(moveNoise)
-                (*vItr)->moveWithNoise(goofyPerlinNoise);;
+                (*vItr)->moveWithNoise(goofyPerlinNoise,2);;
             if(followFlow)
                 (*vItr)->follow(goofyFlowField);
             applyRepulsions((*vItr));
             applyAttraction((*vItr));
+      
+      
+      
+      
+            // Ciclo per il contollo dello stormo. Se gli element sono troppo vicini, si allontanano, se sono troppo lontanti fra di loro,
+            // si avvicinano
+            vector<GoofyParticle*>::iterator vItr2 = vItr;
+    
+            vItr2++;
+//            while ( vItr2 != particles.end() )
+//            {
+//              ofVec3f dir = (*vItr)->position - (*vItr2)->position;
+//              float distSqrd = dir.lengthSquared();
+//              float zoneRadiusSqrd = 10000;
+//              float percent = distSqrd/zoneRadiusSqrd;
+//              if( distSqrd <= zoneRadiusSqrd ) {   // SEPARATION
+//                float F = ( zoneRadiusSqrd/distSqrd - 1.0f ) * 0.01f;
+//                dir = dir.normalized() * F;
+//                (*vItr)->addForce(dir);
+//                (*vItr2)->addForce(-dir);
+//              }
+//              else { // ... else attract
+//                float thresh = .184;
+//                float threshDelta = 1.0f - thresh;
+//                float adjustedPercent = ( percent - thresh )/threshDelta;
+//                float F = ( 1.0 - ( cos( adjustedPercent * M_PI*2.0f ) * -0.5f + 0.5f ) ) * 0.04f;
+//                dir = dir.normalized() * F;
+//                (*vItr)->addForce(-dir);
+//                (*vItr2)->addForce(dir);
+//              }
+//              vItr2++;
+//            }
+//      
+      
+            ofPoint center(ofGetWidth()*.5, ofGetHeight()*.5);
+            ofPoint distance = (*vItr)->position - center;
+      
+            // Questo serve per fare in modo che le particelle non si muovino tropo dal centro
+      
+            if(distance.length() > 300)
+            {
+              ofVec3f centerForce;
+              centerForce = -distance.normalize() * 3;
+              (*vItr)->addForce(centerForce);
+            }
+      
+      
             (*vItr)->update();
             lastActionInsideUpdateLoop((*vItr));
-            (*vItr)->draw();
-            vItr++;
+      
+            if (!(*vItr)->active)
+            {
+              delete * vItr;
+              vItr = particles.erase( vItr );
+            }
+            else
+            {
+              (*vItr)->draw();
+              vItr++;
+            }
     //    }
     }
-    removeNonActiveParticles();
 }
 
 void GoofyParticleSystem::removeLastRepeller()
@@ -155,14 +211,6 @@ void GoofyParticleSystem::update()
     vector<GoofyParticle*>::iterator vItr = particles.begin();
     while ( vItr != particles.end() )
     {
-//        if (!(*vItr)->active)
-//        {
-//            vItr = particles.erase( vItr );
-//            break;
-//        }
-//        else
-//        {
-    //        (*vItr)->followTarget();
 
         if(bFollowTarget)
              (*vItr)->followTarget();
@@ -175,10 +223,17 @@ void GoofyParticleSystem::update()
         applyAttraction((*vItr));
         (*vItr)->update();
         lastActionInsideUpdateLoop((*vItr));
-        vItr++;
-//        }
+      
+        if (!(*vItr)->active)
+        {
+          delete * vItr;
+          vItr = particles.erase( vItr );
+        }
+        else
+        {
+          vItr++;
+        }
     }
-    removeNonActiveParticles();
 }
 
 void GoofyParticleSystem::addRepeller(GoofyMagneticPoint* repeller)
@@ -209,24 +264,6 @@ void GoofyParticleSystem::applyAttraction(GoofyParticle* particle)
     {
         particle->applyAttraction((*vItr));
         vItr++;
-    }
-}
-
-void GoofyParticleSystem::removeNonActiveParticles()
-{
-    vector<GoofyParticle*>::iterator vItr = particles.begin();
-    while ( vItr != particles.end() )
-    {
-        if (!(*vItr)->active)
-        {
-            delete * vItr;
-            vItr = particles.erase( vItr );
-            break;
-        }
-        else
-        {
-            vItr++;
-        }
     }
 }
 

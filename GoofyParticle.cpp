@@ -9,14 +9,14 @@
 
 uint GoofyParticle::count = 0;
 
-GoofyParticle::GoofyParticle(ofVec2f position, float limitVelocity, ofColor color, float spring, float friction, long int life)
+GoofyParticle::GoofyParticle(ofVec3f position, float limitVelocity, ofColor color, float spring, float friction, long int life)
 {
     id = GoofyParticle::count;
     GoofyParticle::count++;
     init(position, limitVelocity, color, spring, friction, life);
 }
 
-void GoofyParticle::init(ofVec2f position, float limitVelocity, ofColor color, float spring, float friction, long int life)
+void GoofyParticle::init(ofVec3f position, float limitVelocity, ofColor color, float spring, float friction, long int life)
 {
     this->position = position;
     this->limitVelocity = limitVelocity;
@@ -41,30 +41,25 @@ void GoofyParticle::init(ofVec2f position, float limitVelocity, ofColor color, f
 void GoofyParticle::moveWithNoise(GoofyPerlinNoise &goofyPerlinNoise)
 {
     float theta = ofMap(goofyPerlinNoise.getValue(position.x, position.y),0,1,0, 2 * TWO_PI);
-    ofVec2f newForce = ofVec2f(cos(theta),sin(theta)) * limitVelocity;
-    force += newForce;
-    //addForce(newForce);
+    ofVec3f newForce = ofVec3f(cos(theta),sin(theta)) * limitVelocity;
+    addForce(newForce);
 }
 
 
 void GoofyParticle::moveWithNoise(GoofyPerlinNoise &goofyPerlinNoise, float _velocity)
 {
     float theta = ofMap(goofyPerlinNoise.getValue(position.x, position.y),0,1,0, 2 * TWO_PI);
-    ofVec2f newForce = ofVec2f(cos(theta),sin(theta)) * _velocity;
-    force += newForce;
-    // addForce(newForce);
+    ofVec3f newForce = ofVec3f(cos(theta),sin(theta),0 ) * _velocity;
+    addForce(newForce);
 }
 
 void GoofyParticle::follow(GoofyFlowField &flow) {
-    ofVec2f desired = flow.lookup(position);
+    ofVec3f desired = flow.lookup(position);
     desired *= limitVelocity;
-    ofVec2f steer = desired - limitVelocity;
-    steer.limit(limitVelocity);
-    force += steer;
-    //addForce(steer);
+    addForce(desired);
 }
 
-void GoofyParticle::addForce(ofVec2f _force)
+void GoofyParticle::addForce(ofVec3f _force)
 {
     force += _force;
 }
@@ -115,15 +110,6 @@ void GoofyParticle::checkBoundingBox()
 
 void GoofyParticle::followTarget()
 {
-  /*
-  Simple spring, abbreviated form:
-  vx += (targetX - sprite.x) * spring;
-  vy += (targetY - sprite.y) * spring;
-  vx *= friction;
-  vy *= friction;
-  sprite.x += vx;
-  sprite.y += vy;
-  */
     ofPoint distance;
 	ofPoint	acceleration(0);
 	distance = target - position;
@@ -133,7 +119,6 @@ void GoofyParticle::followTarget()
     tempVector.y = sin(angleDirection) * abs(distance.y) * 2; // limitVelocity;
     tempVector.x = ofClamp(tempVector.x, -limitVelocity, limitVelocity);
     tempVector.y = ofClamp(tempVector.y, -limitVelocity, limitVelocity);
-  
     acceleration = tempVector * spring;
     acceleration *= friction;
     force += acceleration;
@@ -141,7 +126,6 @@ void GoofyParticle::followTarget()
 
 void GoofyParticle::applyRepulsion(GoofyMagneticPoint* repeller)
 {
-//  cout << "Repeller pos = " << repeller->position << endl;
   float dist = this->position.distance(repeller->position);
   
   if(dist > repeller->radius)
@@ -158,15 +142,7 @@ void GoofyParticle::applyRepulsion(GoofyMagneticPoint* repeller)
     rejectForce.x = ofClamp(rejectForce.x, -limitVelocity/4, limitVelocity/4);
     rejectForce.y = ofClamp(rejectForce.y, -limitVelocity/4, limitVelocity/4);
   }
-  
-  //    rejectForce *= friction;
-  //  rejectForce *= friction;
-  
-  //    if(rejectForce.x > limitVelocity)
-  //      rejectForce.x = limitVelocity;
-  //    if(rejectForce.y > limitVelocity)
-  //      rejectForce.y = limitVelocity;
-  force += rejectForce;
+  addForce(rejectForce);
 }
 
 void GoofyParticle::applyAttraction(GoofyMagneticPoint* attractor)
@@ -182,13 +158,7 @@ void GoofyParticle::applyAttraction(GoofyMagneticPoint* attractor)
   attractionForce.x = (attractor->force * (abs(distCoord.x)/attractor->radius)) * cos((angleDirection));
   attractionForce.y = (attractor->force * (abs(distCoord.y)/attractor->radius)) * sin((angleDirection));
   attractionForce /= 10;
-
-//  if(repeller->limitSpeed)
-//  {
-//    rejectForce.x = ofClamp(rejectForce.x, -limitVelocity/4, limitVelocity/4);
-//    rejectForce.y = ofClamp(rejectForce.y, -limitVelocity/4, limitVelocity/4);
-//  }
-  force -= attractionForce;
+  addForce(-attractionForce);
 }
 
 void GoofyParticle::followTarget(ofPoint target)

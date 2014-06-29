@@ -38,7 +38,6 @@ public:
   
   ofxCvGrayscaleImage     grayImage;
   ofxCvContourFinder      contourFinder;
-  void                    setBackground();
   ofParameterGroup*       getParameterGroup();
   ofParameterGroup*       arboretumDetectParams;
   ofParameter<bool>       useBodyShape;
@@ -54,14 +53,8 @@ public:
   ofFbo             changedFbo;
   ofFbo             depthStableFbo;
   ofImage           changedImage;
-  
   ofShader            filterDepthShader;
   ofFbo               filterDepthFbo;
-  
-  ofFbo               backgroundFbo;
-  ofFbo               substractionFbo;
-  ofShader            substractionShader;
-  ofImage             substractionImage;
   
 };
 
