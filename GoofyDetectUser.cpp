@@ -50,8 +50,6 @@ void GoofyDetectUser::setup(bool _useBodyShape, int width, int height)
   opticalFlowResolution = 10;
   activeOpticalFlow = false;
   ofLog(OF_LOG_SILENT);
-  
-  
   filterDepthShader.load("filterDepthShader.vert", "filterDepthShader.frag");
   initFrameBuffer(width, height, filterDepthFbo);
 }
@@ -81,7 +79,7 @@ ofParameterGroup* GoofyDetectUser::getParameterGroup()
       arboretumDetectParams->add(farThreshold.set("Far Threshold", farThreshold, 0, 10000));
     }
   }
-  arboretumDetectParams->add(flowSolver.sumVelLimit.set("Sum vel limit", 1000, 0, 10000));
+  arboretumDetectParams->add(flowSolver.sumVelLimit.set("Sum vel limit", 1000, 0, 100000));
   arboretumDetectParams->add(opticalFlowResolution.set("OpticalFlowResolution", 10, 1, 300));
   return arboretumDetectParams;
 }
@@ -89,7 +87,6 @@ ofParameterGroup* GoofyDetectUser::getParameterGroup()
 void GoofyDetectUser::update()
 {
   ofPixels pixels;
-  
   filterDepthShader.load("filterDepthShader.vert", "filterDepthShader.frag");
   openNIDevice.update();
   if(!activeDetetion)
@@ -99,7 +96,6 @@ void GoofyDetectUser::update()
     updateWithUser();
   else
   {
-    openNIDevice.getDepthThreshold(0).set(nearThreshold, farThreshold);
     updateWithoutUser();
   }
 
@@ -116,7 +112,8 @@ void GoofyDetectUser::update()
     flowSolver.update(pixels.getPixels(), pixels.getWidth(), pixels.getHeight(), pixels.getImageType());
     flowSolver.drawColored(640, 480, 10, opticalFlowResolution);
   }
-  if(!activeOpticalFlow||flowSolver.imageChanged)
+  
+  if(flowSolver.imageChanged)
   {
     changedFbo.begin();
     ofClear(0,0,0,255);
@@ -131,8 +128,8 @@ void GoofyDetectUser::update()
     depthStableFbo.end();
   }
   
-  changedFbo.readToPixels(pixels);
-  changedImage.setFromPixels(pixels.getPixels(), pixels.getWidth(), pixels.getHeight(), pixels.getImageType());
+//  changedFbo.readToPixels(pixels);
+//  changedImage.setFromPixels(pixels.getPixels(), pixels.getWidth(), pixels.getHeight(), pixels.getImageType());
   
   
   filterDepthFbo.begin();
@@ -183,11 +180,15 @@ void GoofyDetectUser::checkBlobPosition(ofxOpenNIUser &user)
 
 void GoofyDetectUser::updateWithoutUser()
 {
-  ofxOpenNIDepthThreshold depthThreshold = openNIDevice.getDepthThreshold(0);
-  ofPixels pixels = depthThreshold.getMaskPixels();
-  if(depthThreshold.getMaskPixels().getWidth() != 0)
+  ofPixels pixels;
+
+  //openNIDevice.getDepthThreshold(0).set(nearThreshold, farThreshold);
+  //ofxOpenNIDepthThreshold depthThreshold = openNIDevice.getDepthThreshold(0);
+  //pixels = depthThreshold.getMaskPixels();
+  filterDepthFbo.readToPixels(pixels);
+  if(pixels.getWidth() != 0)
   {
-    userImage.setFromPixels(&pixels[0], width, height, depthThreshold.getMaskPixels().getImageType());
+    userImage.setFromPixels(&pixels[0], width, height, pixels.getImageType());
     userImage.update();
     if(activeOpenCV)
       checkBlobPosition();
