@@ -41,6 +41,7 @@ void GoofyCamBackgroundSubstraction::update()
     }
     substractionShader.load("backgroundSubstraciton.vert","backgroundSubstraciton.frag");
     substractionFbo.begin();
+      ofClear(0,0,0,255);
     substractionShader.begin();
     substractionShader.setUniformTexture("background", backgroundFbo.getTextureReference(), 0);
     substractionShader.setUniformTexture("original", cam.getTextureReference(), 1);
@@ -53,7 +54,7 @@ void GoofyCamBackgroundSubstraction::update()
 void GoofyCamBackgroundSubstraction::draw()
 {
   ofSetColor(255);
-  cam.draw(0,0,width, height);
+  cam.draw(0,0, width, height);
   substractionFbo.draw(0,height,width,height);
 }
 
