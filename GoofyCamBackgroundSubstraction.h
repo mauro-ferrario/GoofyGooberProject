@@ -27,6 +27,7 @@ public:
   ofShader          substractionShader;
   ofParameter<bool> activeOpticalFlow;
   ofVideoGrabber    cam;
+  ofVideoPlayer 	movie;
 };
 
 #endif /* defined(__LaLinea2__GoofyCamBackgroundSubstraction__) */
