@@ -28,6 +28,12 @@ public:
   ofParameter<bool> activeOpticalFlow;
   ofVideoGrabber    cam;
   ofVideoPlayer 	movie;
+  
+  ofParameterGroup*  getParameterGroup();
+  ofParameterGroup*  goofyCamBackgroundSubstractionGroup;
+  ofParameter<float>      thresholdSensitivity;
+  ofParameter<float>      smoothing;
+  ofParameter<ofColor> background;
 };
 
 #endif /* defined(__LaLinea2__GoofyCamBackgroundSubstraction__) */

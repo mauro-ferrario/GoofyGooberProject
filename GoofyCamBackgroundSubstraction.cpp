@@ -15,6 +15,22 @@ GoofyCamBackgroundSubstraction::GoofyCamBackgroundSubstraction()
   
 }
 
+
+ofParameterGroup* GoofyCamBackgroundSubstraction::getParameterGroup()
+{
+  if(!goofyCamBackgroundSubstractionGroup)
+    goofyCamBackgroundSubstractionGroup = new ofParameterGroup();
+  if(goofyCamBackgroundSubstractionGroup->getName() == "")
+  {
+    goofyCamBackgroundSubstractionGroup->setName("Background Substraction");
+    goofyCamBackgroundSubstractionGroup->add(thresholdSensitivity.set("thresholdSensitivity", 0.0754, 0.0000, 1.0000));
+    goofyCamBackgroundSubstractionGroup->add(smoothing.set("smoothing", 0.0850, 0.0000, 1.0000));
+    goofyCamBackgroundSubstractionGroup->add(background.set("background", ofColor(0,0,0), ofColor(0,0,0), ofColor(255,255,255)));
+  }
+  
+  return goofyCamBackgroundSubstractionGroup;
+}
+
 void GoofyCamBackgroundSubstraction::setup(int width, int height, bool useOpticalFlow)
 {
   cam.setDeviceID(0);
@@ -49,6 +65,9 @@ void GoofyCamBackgroundSubstraction::update()
     substractionFbo.begin();
       ofClear(0,0,0,255);
     substractionShader.begin();
+    substractionShader.setUniform1f("thresholdSensitivity", thresholdSensitivity);
+    substractionShader.setUniform1f("smoothing", smoothing);
+    substractionShader.setUniform3f("chromakeyColor", background->r, background->g, background->b);
     substractionShader.setUniformTexture("background", backgroundFbo.getTextureReference(), 0);
     substractionShader.setUniformTexture("original", movie.getTextureReference(), 1);
     backgroundFbo.draw(0,0);
