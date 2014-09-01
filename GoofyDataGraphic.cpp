@@ -34,23 +34,32 @@ void GoofyDataGraphic::setMinAndMax(float min, float max)
   this->max = max;
 }
 
-
-float GoofyDataGraphic::getValue()
+void GoofyDataGraphic::setColor(string index, ofColor color)
 {
-  return *values.end();
+  singleDataGraphic[index].color = color;
 }
 
-void GoofyDataGraphic::addValue(float value)
+void GoofyDataGraphic::setActive(string index, bool active)
 {
-  values.push_back(value);
-  checkSize();
+  singleDataGraphic[index].active = active;
 }
 
-void GoofyDataGraphic::checkSize()
+float GoofyDataGraphic::getValue(string index)
 {
-  if(values.size() > maxSize)
+  return *singleDataGraphic[index].values.end();
+}
+
+void GoofyDataGraphic::addValue(string index, float value)
+{
+  singleDataGraphic[index].values.push_back(value);
+  checkSize(index);
+}
+
+void GoofyDataGraphic::checkSize(string index)
+{
+  if(singleDataGraphic[index].values.size() > maxSize)
   {
-    values.erase(values.begin());
+    singleDataGraphic[index].values.erase(singleDataGraphic[index].values.begin());
   }
 }
 
@@ -75,18 +84,33 @@ void GoofyDataGraphic::draw(int x, int y)
   ofTranslate(x, y);
   ofPushStyle();
   ofSetColor(0,0,255);
-  ofNoFill();
+  ofFill();
+  ofSetColor(255);
   ofRect(0, 0, width, height);
+  ofNoFill();
   ofPushMatrix();
   ofTranslate(0, height*.5);
+  ofSetColor(0);
   ofLine(0,0,width, 0);
-  for(int i = 1; i < values.size(); i++)
+  for(tr1::unordered_map<string, SingleDataGraphicInfo >::iterator it = singleDataGraphic.begin(); it != singleDataGraphic.end(); ++it)
   {
-    float value1 = ofMap(values[i-1], min, max, -height*.5, height*.5);
-    float value2 = ofMap(values[i], min, max, -height*.5, height*.5);
-    ofLine((i-1) * space,value1, i*space, value2);
+    drawSingleData(it->first);
   }
+
   ofPopMatrix();
   ofPopStyle();
   ofPopMatrix();
+}
+
+void GoofyDataGraphic::drawSingleData(string index)
+{
+  ofPushStyle();
+  ofSetColor(singleDataGraphic[index].color);
+  for(int i = 1; i < singleDataGraphic[index].values.size(); i++)
+  {
+    float value1 = ofMap(singleDataGraphic[index].values[i-1], min, max, -height*.5, height*.5);
+    float value2 = ofMap(singleDataGraphic[index].values[i], min, max, -height*.5, height*.5);
+    ofLine((i-1) * space,value1, i*space, value2);
+  }
+  ofPopStyle();
 }
