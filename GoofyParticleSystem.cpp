@@ -166,12 +166,12 @@ void GoofyParticleSystem::updateAndDraw()
       
             // Questo serve per fare in modo che le particelle non si muovino tropo dal centro
       
-            if(distance.length() > 300)
-            {
-              ofVec3f centerForce;
-              centerForce = -distance.normalize() * 3;
-              (*vItr)->addForce(centerForce);
-            }
+//            if(distance.length() > 300)
+//            {
+//              ofVec3f centerForce;
+//              centerForce = -distance.normalize() * 3;
+//              (*vItr)->addForce(centerForce);
+//            }
       
       
             (*vItr)->update();
@@ -189,6 +189,18 @@ void GoofyParticleSystem::updateAndDraw()
             }
     //    }
     }
+}
+
+void GoofyParticleSystem::removeRepellers()
+{
+  vector<GoofyMagneticPoint*>::iterator vItr = repellers.begin();
+  while ( vItr != repellers.end() )
+  {
+    GoofyMagneticPoint* tempPointer = (*vItr);
+    repellers.pop_back();
+    tempPointer = NULL;
+    delete tempPointer;
+  }
 }
 
 void GoofyParticleSystem::removeLastRepeller()

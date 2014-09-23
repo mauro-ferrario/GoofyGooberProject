@@ -39,7 +39,7 @@ public:
     void                            changeVelocityFromOfParams(float &perc);
     void                            changeVelocity(float perc);
     void                            removeLastRepeller();
-
+    void                            removeRepellers();
     bool                            moveNoise;
     bool                            followFlow;
     bool                            bFollowTarget;
