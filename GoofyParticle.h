@@ -34,8 +34,10 @@ public:
     
     int             life;
     ofPoint         target;
+    ofPoint*        pointerToTarget;
     ofRectangle     boundingBox;
     ofVec3f         position;
+    ofVec3f         prevPosition;
     float           limitVelocity;
     float           originalLimitVelocity;
     float           spring;

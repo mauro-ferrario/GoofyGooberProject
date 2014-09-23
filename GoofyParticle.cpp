@@ -36,6 +36,7 @@ void GoofyParticle::init(ofVec3f position, float limitVelocity, ofColor color, f
     else
         lifeActive = false;
     force.x = force.y = 0;
+    pointerToTarget = &target;
 }
 
 void GoofyParticle::moveWithNoise(GoofyPerlinNoise &goofyPerlinNoise)
