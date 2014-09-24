@@ -17,6 +17,7 @@ GoofyBlobTracker::GoofyBlobTracker()
 
 void GoofyBlobTracker::init(inputMode mode)
 {
+  this->mode = mode;
   initTrackingColor();
   initContourFinder();
   initGUI();
@@ -49,6 +50,14 @@ void GoofyBlobTracker::init(ofVideoPlayer* movie)
   inputWidth = this->movie->getWidth();
   inputHeight = this->movie->getHeight();
   init(INPUT_MODE_MOVIE);
+}
+
+void GoofyBlobTracker::init(ofVideoGrabber* cam)
+{
+  this->cam = cam;
+  inputWidth = this->cam->getWidth();
+  inputHeight = this->cam->getHeight();
+  init(INPUT_MODE_CAM);
 }
 
 void GoofyBlobTracker::initTrackingColor()
@@ -149,7 +158,9 @@ void GoofyBlobTracker::draw()
   if(!active)
     return;
   if(seeInput)
-    movie->draw(0,0);
+  {
+    drawInput();
+  }
   else
   {
     ofPushStyle();
@@ -166,6 +177,19 @@ void GoofyBlobTracker::draw()
     drawROI();
 }
 
+void GoofyBlobTracker::drawInput()
+{
+  switch (mode) {
+    case INPUT_MODE_CAM:
+      cam->draw(0,0);
+      break;
+    case INPUT_MODE_MOVIE:
+      movie->draw(0,0);
+      break;
+    default:
+      break;
+  }
+}
 
 void GoofyBlobTracker::drawContourFinder()
 {
@@ -216,7 +240,14 @@ void GoofyBlobTracker::updateContourFinder()
 
 cv::Mat GoofyBlobTracker::gerROIImage()
 {
-  cam_mat = toCv(*movie);
+  switch (mode) {
+    case INPUT_MODE_CAM:
+      cam_mat = toCv(*cam);
+      break;
+    case INPUT_MODE_MOVIE:
+      cam_mat = toCv(*movie);
+      break;
+  }
   ROIx = ofClamp(ROIx, 1, inputWidth - 1);
   ROIy = ofClamp(ROIy, 1, 200);
   ROIwidth = ofClamp(ROIwidth, 1, inputWidth - 50 -ROIx-1);
@@ -246,7 +277,15 @@ void GoofyBlobTracker::mousePressed(ofMouseEventArgs &e){
     {
       if(e.y > outputPos.y && e.y < outputPos.y + inputHeight * scale.y)
       {
-        targetColor = movie->getPixelsRef().getColor((e.x - outputPos.x) / scale.x, (e.y - outputPos.y)/scale.y);
+        switch (mode) {
+          case INPUT_MODE_CAM:
+            targetColor = cam->getPixelsRef().getColor((e.x - outputPos.x) / scale.x, (e.y - outputPos.y)/scale.y);
+            break;
+          case INPUT_MODE_MOVIE:
+            targetColor = movie->getPixelsRef().getColor((e.x - outputPos.x) / scale.x, (e.y - outputPos.y)/scale.y);
+            break;
+        }
+        
       }
     }
   }

@@ -33,6 +33,7 @@ public:
   void                      initContourFinder();
   void                      initTrackingColor();
   void                      init(ofVideoPlayer* movie);
+  void                      init(ofVideoGrabber* cam);
   void                      initGUI();
   void                      update();
   void                      updateContourFinder();
@@ -49,8 +50,9 @@ public:
   void                      initOSC(string ip, int port);
   void                      sendOSC(ofRectangle rect, int pos);
   void                      readXML();
+  void                      drawInput();
   ofVideoPlayer*            movie;
-  ofVideoGrabber            cam;
+  ofVideoGrabber*           cam;
   ofxCv::ContourFinder      contourFinder;
   ofxCv::TrackingColorMode  trackingColorMode;
   ofParameter<float>        threshold;
@@ -87,6 +89,7 @@ public:
   ofPoint                   outputPos;
   ofPoint                   scale;
   ofxOscSender              sender;
+  inputMode                 mode;
   
 };
 
