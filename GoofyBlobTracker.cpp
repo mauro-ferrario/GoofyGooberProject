@@ -240,11 +240,14 @@ void GoofyBlobTracker::drawROI()
 }
 
 void GoofyBlobTracker::mousePressed(ofMouseEventArgs &e){
-  if(e.x > outputPos.x && e.x < outputPos.x + inputWidth * scale.x)
+  if(active&&guiVisible&&seeInput)
   {
-    if(e.y > outputPos.y && e.y < outputPos.y + inputHeight * scale.y)
+    if(e.x > outputPos.x && e.x < outputPos.x + inputWidth * scale.x)
     {
-      targetColor = movie->getPixelsRef().getColor((e.x - outputPos.x) / scale.x, (e.y - outputPos.y)/scale.y);
+      if(e.y > outputPos.y && e.y < outputPos.y + inputHeight * scale.y)
+      {
+        targetColor = movie->getPixelsRef().getColor((e.x - outputPos.x) / scale.x, (e.y - outputPos.y)/scale.y);
+      }
     }
   }
 }
