@@ -77,6 +77,8 @@ void GoofyBlobTracker::initContourFinder()
 
 void GoofyBlobTracker::initGUI()
 {
+  ofParameterGroup defaultParams;
+  defaultParams.setName((name));
   ofParameterGroup openCVParams;
   openCVParams.setName("OpenCV");
   openCVParams.add(active.set("Active", true));
@@ -98,11 +100,12 @@ void GoofyBlobTracker::initGUI()
   openCVParams.add(ROIheight.set("ROI heighy", 100, 10, 5000));
   openCVParams.add(bSendOSC.set("Send OSC", false));
   openCVParams.add(maxBlobToSend.set("Max blob to send", 1, 0, 50));
-  gui.setup(openCVParams);
+  gui.setup(defaultParams);
   ofParameterGroup inputParams;
   inputParams.setName("Input");
   inputParams.add(seeInput.set("See input", true));
   gui.add(inputParams);
+  gui.add(openCVParams);
   gui.loadFromFile("settings.xml");
   guiVisible = true;
 }
