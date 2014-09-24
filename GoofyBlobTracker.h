@@ -13,7 +13,8 @@
 #include "ofxCv.h"
 #include "ofxOpenCv.h"
 #include "ofxGui.h"
-
+#include "ofxOsc.h"
+#include "ofxXmlSettings.h"
 
 enum inputMode
 {
@@ -28,31 +29,39 @@ class GoofyBlobTracker
 public:
                             GoofyBlobTracker();
   void                      init(inputMode mode);
+  void                      setName(string name);
   void                      initContourFinder();
   void                      initTrackingColor();
-  void                      initMovie(string url);
+  void                      init(ofVideoPlayer* movie);
   void                      initGUI();
   void                      update();
   void                      updateContourFinder();
-  void                      updateInput();
   cv::Mat                   gerROIImage();
   void                      drawROI();
+  void                      draw(int x, int y);
   void                      draw(int x, int y, int width, int height);
   void                      draw();
-  void                      drawGUI();
-  void                      mousePressed(int x, int y, int button);
-  void                      currentFrameChanged(int &curFrame);
-  ofVideoPlayer             movie;
+  void                      drawGUI(bool showTracking);
+  void                      mousePressed(ofMouseEventArgs &e);
+  void                      keyReleased(ofKeyEventArgs &e);
+  void                      setGUIPosition(ofPoint pos);
+  void                      drawContourFinder();
+  void                      initOSC(string ip, int port);
+  void                      sendOSC(ofRectangle rect, int pos);
+  void                      readXML();
+  ofVideoPlayer*            movie;
   ofVideoGrabber            cam;
   ofxCv::ContourFinder      contourFinder;
   ofxCv::TrackingColorMode  trackingColorMode;
   ofParameter<float>        threshold;
   ofParameter<float>        minBlobArea;
   ofParameter<float>        maxBlobArea;
+  ofParameter<bool>         active;
   ofParameter<bool>         bFindHoles;
   ofParameter<bool>         bInvert;
   ofParameter<bool>         bSimplify;
   ofParameter<bool>         seeInput;
+  ofParameter<bool>         sortBySize;
   ofParameter<int>          ROIx;
   ofParameter<int>          ROIy;
   ofParameter<int>          ROIwidth;
@@ -60,8 +69,10 @@ public:
   ofParameter<bool>         useTargetColor;
   ofParameter<int>          actualTrackingColorMode;
   ofParameter<bool>         saveBackground;
-  ofParameter<int>          currentFrame;
   ofParameter<bool>         pause;
+  ofParameter<bool>         drawShape;
+  ofParameter<bool>         drawRect;
+  bool                      guiVisible;
   ofxPanel                  gui;
   ofParameter<ofColor>      targetColor;
   cv::Mat                   cam_mat;
@@ -70,6 +81,16 @@ public:
   string                    trackingColorModeNames[4];
   float                     inputWidth;
   float                     inputHeight;
+  string                    name;
+  ofParameter<bool>         bSendOSC;
+  ofParameter<int>          maxBlobToSend;
+  ofPoint                   outputPos;
+  ofPoint                   scale;
+  ofxOscSender              sender;
+  
 };
 
+
 #endif /* defined(__verticalWaves__GoofyBlobTracker__) */
+
+
