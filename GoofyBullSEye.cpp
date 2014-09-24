@@ -29,6 +29,7 @@ void GoofyBullSEye::initCircleEye(ofVec2f pos, float circleSize)
   fbo.begin();
   ofClear(255,0);
   ofSetColor(255);
+  ofSetCircleResolution(150);
   ofCircle(pos, circleSize);
   fbo.end();
 }
@@ -40,15 +41,24 @@ void GoofyBullSEye::update()
 
 void GoofyBullSEye::update(float blur)
 {
+  if(opacity == 0)
+    return;
   setBlur(blur);
   update();
 }
 
 void GoofyBullSEye::draw()
 {
+  if(opacity == 0)
+    return;
   ofPushStyle();
-  ofSetColor(255);
+  ofSetColor(255, opacity);
+  ofPushMatrix();
+  ofTranslate(goofyBlur.dimension.x*.5, goofyBlur.dimension.y*.5);
+  ofScale(scale, scale);
+  ofTranslate(-goofyBlur.dimension.x*.5, -goofyBlur.dimension.y*.5);
   goofyBlur.draw(0,0);
+  ofPopMatrix();
   ofPopStyle();
 }
 
@@ -58,4 +68,20 @@ void GoofyBullSEye::draw(int x, int y)
   ofTranslate(x,y);
   draw();
   ofPopMatrix();
+}
+
+ofParameterGroup* GoofyBullSEye::getParameterGroup()
+{
+  if(!params)
+  {
+    params = new ofParameterGroup();
+  }
+  if(params->getName() == "")
+  {
+    params->setName("Bull's Eye");
+    params->add(opacity.set("Opacity", 255, 0, 255));
+    params->add(blur.set("Blur", 10, 0, 50));
+    params->add(scale.set("Scale", 1, 0, 5));
+  }
+  return params;
 }
