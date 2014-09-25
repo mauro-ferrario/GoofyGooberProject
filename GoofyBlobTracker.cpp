@@ -103,10 +103,10 @@ void GoofyBlobTracker::initGUI()
   openCVParams.add(useTargetColor.set("Use Target Color", true));
   openCVParams.add(bInvert.set("Invert", true));
   openCVParams.add(bSimplify.set("Simplify", true));
-  openCVParams.add(ROIx.set("ROI x", 0, 0, 500));
-  openCVParams.add(ROIy.set("ROI y", 0, 0, 5000));
-  openCVParams.add(ROIwidth.set("ROI width", 100, 10, 5000));
-  openCVParams.add(ROIheight.set("ROI heighy", 100, 10, 5000));
+  openCVParams.add(ROIx.set("ROI x", 0, 0, inputWidth));
+  openCVParams.add(ROIy.set("ROI y", 0, 0, inputHeight));
+  openCVParams.add(ROIwidth.set("ROI width", 100, 10, inputWidth));
+  openCVParams.add(ROIheight.set("ROI heighy", 100, 10, inputHeight));
   openCVParams.add(bSendOSC.set("Send OSC", false));
   openCVParams.add(maxBlobToSend.set("Max blob to send", 1, 0, 50));
   gui.setup(defaultParams);
@@ -245,12 +245,13 @@ cv::Mat GoofyBlobTracker::gerROIImage()
       cam_mat = toCv(*cam);
       break;
     case INPUT_MODE_MOVIE:
+      
       cam_mat = toCv(*movie);
       break;
   }
   ROIx = ofClamp(ROIx, 1, inputWidth - 1);
   ROIy = ofClamp(ROIy, 1, 200);
-  ROIwidth = ofClamp(ROIwidth, 1, inputWidth - 50 -ROIx-1);
+  ROIwidth = ofClamp(ROIwidth, 1, inputWidth - ROIx-1);
   ROIheight = ofClamp(ROIheight, 1, inputHeight - ROIy - 1);
   cv::Rect crop_roi = cv::Rect(ROIx, ROIy, ROIwidth, ROIheight);
   crop = cam_mat(crop_roi).clone();

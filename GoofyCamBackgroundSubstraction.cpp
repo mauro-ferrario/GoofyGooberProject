@@ -43,7 +43,7 @@ void GoofyCamBackgroundSubstraction::setup(int width, int height, bool useOptica
   cam.setDesiredFrameRate(60);
   cam.initGrabber(width,height);
 #else
-  movie.loadMovie("chromaKeyTest.mov");
+  movie.loadMovie("chromaKeyTest2little.mov");
   movie.play();
 #endif
   this->width = width;
@@ -83,7 +83,7 @@ void GoofyCamBackgroundSubstraction::update()
     {
       // Bisogna aggiungere il codice per usare l'optical flow
     }
-    substractionShader.load("backgroundSubstraciton.vert","backgroundSubstraciton.frag");
+    //substractionShader.load("backgroundSubstraciton.vert","backgroundSubstraciton.frag");
     substractionFbo.begin();
       ofClear(0,0,0,255);
     substractionShader.begin();
