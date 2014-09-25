@@ -107,14 +107,17 @@ void GoofyBlobTracker::initGUI()
   openCVParams.add(ROIy.set("ROI y", 0, 0, inputHeight));
   openCVParams.add(ROIwidth.set("ROI width", 100, 10, inputWidth));
   openCVParams.add(ROIheight.set("ROI heighy", 100, 10, inputHeight));
-  openCVParams.add(bSendOSC.set("Send OSC", false));
-  openCVParams.add(maxBlobToSend.set("Max blob to send", 1, 0, 50));
+  openCVParams.add(maxBlobToCheck.set("Max blob to check", 1, 0, 50));
+  ofParameterGroup OSCParams;
+  OSCParams.setName("Osc");
+  OSCParams.add(bSendOSC.set("Send OSC", false));
   gui.setup(defaultParams);
   ofParameterGroup inputParams;
   inputParams.setName("Input");
   inputParams.add(seeInput.set("See input", true));
   gui.add(inputParams);
   gui.add(openCVParams);
+  gui.add(OSCParams);
   gui.loadFromFile("settings.xml");
   guiVisible = true;
 }
@@ -199,13 +202,16 @@ void GoofyBlobTracker::drawContourFinder()
   int totPolyLines = polylines.size();
   for(int i = 0; i < totPolyLines; i++)
   {
-    ofRectangle rect = toOf(contourFinder.getBoundingRect(i));
-    if(drawShape)
-      polylines[i].draw();
-    if(drawRect)
-      ofRect(rect);
-    if(bSendOSC&&i<maxBlobToSend)
-      sendOSC(rect, i);
+    if(i<maxBlobToCheck)
+    {
+      ofRectangle rect = toOf(contourFinder.getBoundingRect(i));
+      if(drawShape)
+        polylines[i].draw();
+      if(drawRect)
+        ofRect(rect);
+      if(bSendOSC)
+        sendOSC(rect, i);
+    }
   }
   ofPopStyle();
 }
