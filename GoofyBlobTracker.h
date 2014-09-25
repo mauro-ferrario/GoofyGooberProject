@@ -28,25 +28,25 @@ class GoofyBlobTracker
   
 public:
                             GoofyBlobTracker();
-  void                      init(inputMode mode);
+  virtual void              init(inputMode mode);
+  virtual void              init(ofVideoPlayer* movie);
+  virtual void              init(ofVideoGrabber* cam);
   void                      setName(string name);
   void                      initContourFinder();
   void                      initTrackingColor();
-  void                      init(ofVideoPlayer* movie);
-  void                      init(ofVideoGrabber* cam);
   void                      initGUI();
   void                      update();
   void                      updateContourFinder();
   cv::Mat                   gerROIImage();
   void                      drawROI();
-  void                      draw(int x, int y);
-  void                      draw(int x, int y, int width, int height);
-  void                      draw();
+  virtual void              draw(int x, int y);
+  virtual void              draw(int x, int y, int width, int height);
+  virtual void              draw();
   void                      drawGUI(bool showTracking);
   void                      mousePressed(ofMouseEventArgs &e);
   void                      keyReleased(ofKeyEventArgs &e);
   void                      setGUIPosition(ofPoint pos);
-  void                      drawContourFinder();
+  virtual void              drawContourFinder();
   void                      initOSC(string ip, int port);
   void                      sendOSC(ofRectangle rect, int pos);
   void                      readXML();
@@ -85,12 +85,11 @@ public:
   float                     inputHeight;
   string                    name;
   ofParameter<bool>         bSendOSC;
-  ofParameter<int>          maxBlobToSend;
+  ofParameter<int>          maxBlobToCheck;
   ofPoint                   outputPos;
   ofPoint                   scale;
   ofxOscSender              sender;
   inputMode                 mode;
-  
 };
 
 
