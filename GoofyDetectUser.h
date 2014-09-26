@@ -12,7 +12,7 @@
 #include "ofMain.h"
 #include "ofxOpenNI.h"
 #include "ofxOpenCv.h"
-#include "ofxOpticalFlowFarneback.h"
+//#include "ofxOpticalFlowFarneback.h"
 //#include "ofxOsc.h"
 
 class GoofyDetectUser
@@ -48,7 +48,7 @@ public:
   ofParameter<bool>       sendImage;
   ofParameter<int>        opticalFlowResolution;
   ofParameter<bool>       activeOpticalFlow;
-  ofxOpticalFlowFarneback flowSolver;
+  //ofxOpticalFlowFarneback flowSolver;
   void              initFrameBuffer(int width, int height, ofFbo& fb);
   ofFbo             changedFbo;
   ofFbo             depthStableFbo;

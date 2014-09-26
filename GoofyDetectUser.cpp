@@ -46,12 +46,13 @@ void GoofyDetectUser::setup(bool _useBodyShape, int width, int height)
   ofSetColor(255,0,0);
   ofRect(0,0,width, height);
   changedFbo.end();
-  flowSolver.setup(width, height, 0.35, 5, 10, 1, 3, 2.25, false, false);
+  //flowSolver.setup(width, height, 0.35, 5, 10, 1, 3, 2.25, false, false);
   opticalFlowResolution = 10;
   activeOpticalFlow = false;
   ofLog(OF_LOG_SILENT);
   filterDepthShader.load("filterDepthShader.vert", "filterDepthShader.frag");
   initFrameBuffer(width, height, filterDepthFbo);
+  
 }
 
 void GoofyDetectUser::initFrameBuffer(int width, int height, ofFbo& fb)
@@ -79,7 +80,7 @@ ofParameterGroup* GoofyDetectUser::getParameterGroup()
       arboretumDetectParams->add(farThreshold.set("Far Threshold", farThreshold, 0, 10000));
     }
   }
-  arboretumDetectParams->add(flowSolver.sumVelLimit.set("Sum vel limit", 1000, 0, 100000));
+//  arboretumDetectParams->add(flowSolver.sumVelLimit.set("Sum vel limit", 1000, 0, 100000));
   arboretumDetectParams->add(opticalFlowResolution.set("OpticalFlowResolution", 10, 1, 300));
   return arboretumDetectParams;
 }
@@ -107,26 +108,26 @@ void GoofyDetectUser::update()
   
   pixels = openNIDevice.getImagePixels();
   // Questo fa rallentare
-  if(activeOpticalFlow)
-  {
-    flowSolver.update(pixels.getPixels(), pixels.getWidth(), pixels.getHeight(), pixels.getImageType());
-    flowSolver.drawColored(640, 480, 10, opticalFlowResolution);
-  }
-  
-  if(flowSolver.imageChanged)
-  {
-    changedFbo.begin();
-    ofClear(0,0,0,255);
-    ofSetColor(255);
-    userImage.draw(0,0);
-    changedFbo.end();
-    
-    depthStableFbo.begin();
-    ofClear(0,0,0,255);
-    ofSetColor(255);
-    openNIDevice.drawDepth(0, 0);
-    depthStableFbo.end();
-  }
+//  if(activeOpticalFlow)
+//  {
+//    flowSolver.update(pixels.getPixels(), pixels.getWidth(), pixels.getHeight(), pixels.getImageType());
+//    flowSolver.drawColored(640, 480, 10, opticalFlowResolution);
+//  }
+//  
+//  if(flowSolver.imageChanged)
+//  {
+//    changedFbo.begin();
+//    ofClear(0,0,0,255);
+//    ofSetColor(255);
+//    userImage.draw(0,0);
+//    changedFbo.end();
+//    
+//    depthStableFbo.begin();
+//    ofClear(0,0,0,255);
+//    ofSetColor(255);
+//    openNIDevice.drawDepth(0, 0);
+//    depthStableFbo.end();
+//  }
   
 //  changedFbo.readToPixels(pixels);
 //  changedImage.setFromPixels(pixels.getPixels(), pixels.getWidth(), pixels.getHeight(), pixels.getImageType());
