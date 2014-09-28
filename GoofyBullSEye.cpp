@@ -78,8 +78,8 @@ ofParameterGroup* GoofyBullSEye::getParameterGroup()
   }
   if(params->getName() == "")
   {
-    params->setName("Bull's Eye");
-    params->add(opacity.set("Opacity", 255, 0, 255));
+    params->setName("Bull s Eye");
+    params->add(opacity.set("Opacity", 0, 0, 255));
     params->add(blur.set("Blur", 10, 0, 50));
     params->add(scale.set("Scale", 1, 0, 5));
   }
