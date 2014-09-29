@@ -251,7 +251,6 @@ cv::Mat GoofyBlobTracker::gerROIImage()
       cam_mat = toCv(*cam);
       break;
     case INPUT_MODE_MOVIE:
-      
       cam_mat = toCv(*movie);
       break;
   }
