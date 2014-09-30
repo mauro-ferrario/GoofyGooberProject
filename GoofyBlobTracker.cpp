@@ -255,7 +255,7 @@ cv::Mat GoofyBlobTracker::gerROIImage()
       break;
   }
   ROIx = ofClamp(ROIx, 1, inputWidth - 1);
-  ROIy = ofClamp(ROIy, 1, 200);
+  ROIy = ofClamp(ROIy, 1, 400);
   ROIwidth = ofClamp(ROIwidth, 1, inputWidth - ROIx-1);
   ROIheight = ofClamp(ROIheight, 1, inputHeight - ROIy - 1);
   cv::Rect crop_roi = cv::Rect(ROIx, ROIy, ROIwidth, ROIheight);
@@ -311,9 +311,9 @@ void GoofyBlobTracker::sendOSC(ofRectangle rect, int pos)
 {
   ofxOscMessage message;
   message.setAddress(name+"/"+"pos/"+ofToString(pos)+"/");
-  message.addFloatArg(rect.x/inputWidth);
-  message.addFloatArg(rect.y/inputHeight);
-  message.addFloatArg(rect.width/inputWidth);
-  message.addFloatArg(rect.height/inputHeight);
+  message.addFloatArg((rect.x + ROIx)/ROIwidth);
+  message.addFloatArg((rect.y + ROIy)/ROIheight);
+  message.addFloatArg(rect.width/ROIwidth);
+  message.addFloatArg(rect.height/ROIheight);
   sender.sendMessage(message);
 }
