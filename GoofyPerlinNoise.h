@@ -15,6 +15,7 @@ class GoofyPerlinNoise
 {
 public:
                       GoofyPerlinNoise(float resX = .01, float resY = .01, float speed = .005);
+                      ~GoofyPerlinNoise();
   void                initPerlinImage(int perliImgWidth, int perlinImgHeight, int width, int height);
   float               getValue(int x, int y);
   float               getValue(int x, int y, float tempResX, float tempResY);
@@ -22,9 +23,8 @@ public:
   void                draw();
   void                draw(int x, int y, int width, int height);
   void                setPerlinImageRect(ofRectangle rect);
-//  void                setOSC(int localPort, string host, int remotePort);
+  void                removeNoiseParams();
   ofParameterGroup*   getParameterGroup();
-  
   ofParameterGroup*   noiseParams;
   ofParameter<float>  resX;
   ofParameter<float>  resY;

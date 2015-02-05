@@ -103,8 +103,8 @@ void GoofyParticleSystem::draw()
 
 void GoofyParticleSystem::updateAndDraw()
 {
-    if(moveNoise)
-        goofyPerlinNoise.update();
+   // if(moveNoise)
+     //   goofyPerlinNoise.update();
 
     vector<GoofyParticle*>::iterator vItr = particles.begin();
     while ( vItr != particles.end() )

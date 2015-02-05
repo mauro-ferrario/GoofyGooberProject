@@ -31,12 +31,14 @@ void GoofyBlobTracker::init(inputMode mode)
 void GoofyBlobTracker::readXML()
 {
   ofxXmlSettings XML;
+  string ip = "127.0.0.1";
+  int port = 12346;
   if(XML.loadFile("osc.xml"))
   {
-    string ip = XML.getValue("osc:host","127.0.0.1");
-    int port = XML.getValue("osc:port", 12346);
-    initOSC(ip, port);
+    ip = XML.getValue("osc:host","127.0.0.1");
+    port = XML.getValue("osc:port", 12346);
   }
+  initOSC(ip, port);
 }
 
 void GoofyBlobTracker::setName(string name)
@@ -108,6 +110,21 @@ void GoofyBlobTracker::initGUI()
   openCVParams.add(ROIwidth.set("ROI width", 100, 10, inputWidth));
   openCVParams.add(ROIheight.set("ROI heighy", 100, 10, inputHeight));
   openCVParams.add(maxBlobToCheck.set("Max blob to check", 1, 0, 50));
+  openCVParams.add(blurSize.set("Blur Size", 1, 0, 50));
+  openCVParams.add(drawFilled.set("Filled", true));
+  
+  
+//  shadowParameters->setName("Shadow");
+  
+  openCVParams.add(smooth.set("Smooth", false));
+  openCVParams.add(smoothingSize.set("SmoothingSize", 0, 0, 100));
+  openCVParams.add(smoothingShape.set("smoothingShape", .3, 0, 1));
+  openCVParams.add(resempleBySpacing.set("resempleBySpacing", false));
+  openCVParams.add(resempledSpaceSize.set("resempledSpaceSize", 10, 0, 500));
+  openCVParams.add(resempleByCount.set("resempleByCount", false));
+  openCVParams.add(resempledCoundSize.set("resempledCoundSize", 10, 0, 2000));
+  
+  
   ofParameterGroup OSCParams;
   OSCParams.setName("Osc");
   OSCParams.add(bSendOSC.set("Send OSC", false));
@@ -118,6 +135,7 @@ void GoofyBlobTracker::initGUI()
   gui.add(inputParams);
   gui.add(openCVParams);
   gui.add(OSCParams);
+  addExtraParamsGUI();
   gui.loadFromFile("settings.xml");
   guiVisible = true;
 }
@@ -197,21 +215,73 @@ void GoofyBlobTracker::drawInput()
 void GoofyBlobTracker::drawContourFinder()
 {
   ofPushStyle();
-  ofNoFill();
+  if(drawFilled)
+    ofFill();
+  else
+    ofNoFill();
   vector<ofPolyline> polylines = contourFinder.getPolylines();
+  
+  ofxOscBundle bundle;
   int totPolyLines = polylines.size();
   for(int i = 0; i < totPolyLines; i++)
   {
     if(i<maxBlobToCheck)
     {
       ofRectangle rect = toOf(contourFinder.getBoundingRect(i));
+      
+      if(smooth)
+        polylines[i] = polylines[i].getSmoothed(smoothingSize,smoothingShape);
+      else if(resempleBySpacing)
+        polylines[i] = polylines[i].getResampledBySpacing(resempledSpaceSize);
+      else if(resempleByCount)
+        polylines[i] = polylines[i].getResampledByCount(resempledCoundSize);
+      
       if(drawShape)
         polylines[i].draw();
+      
       if(drawRect)
         ofRect(rect);
       if(bSendOSC)
-        sendOSC(rect, i);
+      {
+        ofxOscMessage message;
+        int cont = 0;
+
+        message.setAddress(name+"_"+ofToString(cont)+"/pos/"+ofToString(i)+"/");
+        int totPoints = polylines[i].size();
+        
+        int totMessageToSend = ceil(float(totPoints)/300);        if(totPoints < 300)
+          message.addIntArg(totPoints);
+        else
+        {
+          message.addIntArg(300);
+        }
+        for(int a = 0; a < totPoints; a++)
+        {
+          vector<ofPoint> & points = polylines[i].getVertices();
+          message.addFloatArg((points[a].x + ROIx)/ROIwidth);
+          message.addFloatArg((points[a].y + ROIy)/ROIheight);
+          if((a%300 == 0 || a == totPoints-1) && a != 0)
+          {
+            bundle.addMessage(message);
+            sender.sendMessage(message);
+            message.clear();
+            cont++;
+            message.setAddress(name+"_"+ofToString(cont)+"/pos/"+ofToString(i)+"/");
+            if(cont == totMessageToSend-1)
+              message.addIntArg(totPoints%300);
+            else
+              message.addIntArg(300);
+          }
+          
+        }
+        //sendOSC(rect, i);
+      }
     }
+  }
+  
+  if(bSendOSC)
+  {
+//    sender.sendBundle(bundle);
   }
   ofPopStyle();
 }
@@ -241,26 +311,33 @@ void GoofyBlobTracker::updateContourFinder()
     contourFinder.setTargetColor(targetColor, trackingColorModes[actualTrackingColorMode]);
   else
     contourFinder.useTargetColor = useTargetColor;
-  contourFinder.findContours(gerROIImage());
+  contourFinder.findContours(getROIImage());
 }
 
-cv::Mat GoofyBlobTracker::gerROIImage()
+cv::Mat GoofyBlobTracker::getROIImage()
 {
-  switch (mode) {
-    case INPUT_MODE_CAM:
-      cam_mat = toCv(*cam);
-      break;
-    case INPUT_MODE_MOVIE:
-      cam_mat = toCv(*movie);
-      break;
-  }
+//  switch (mode) {
+//    case INPUT_MODE_CAM:
+//      cam_mat = toCv(*cam);
+//      break;
+//    case INPUT_MODE_MOVIE:
+//      cam_mat = toCv(*movie);
+//      break;
+//  }
+  
+  ofxCvColorImage color;
+  color.setFromPixels(cam->getPixels(), inputWidth, inputHeight);
+  if(blurSize > 0)
+    color.blur((blurSize*2)+1);
   ROIx = ofClamp(ROIx, 1, inputWidth - 1);
   ROIy = ofClamp(ROIy, 1, 400);
   ROIwidth = ofClamp(ROIwidth, 1, inputWidth - ROIx-1);
   ROIheight = ofClamp(ROIheight, 1, inputHeight - ROIy - 1);
-  cv::Rect crop_roi = cv::Rect(ROIx, ROIy, ROIwidth, ROIheight);
-  crop = cam_mat(crop_roi).clone();
-  return crop;
+ // cv::Rect crop_roi = cv::Rect(ROIx, ROIy, ROIwidth, ROIheight);
+  color.setROI(ofRectangle(ROIx, ROIy, ROIwidth, ROIheight));
+  //crop = cam_mat(crop_roi).clone();
+  cam_mat = toCv(color);
+  return cam_mat;
 }
 
 void GoofyBlobTracker::drawROI()

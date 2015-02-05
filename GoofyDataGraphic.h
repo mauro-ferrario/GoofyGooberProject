@@ -18,34 +18,45 @@ class SingleDataGraphicInfo
 public:
   vector<float> values;
   ofColor       color;
-  bool          active;
+  float         thresholdMin;
+  float         thresholdMax;
+  bool          hit;
 };
 
 class GoofyDataGraphic
 {
 public:
-  GoofyDataGraphic();
-  void setSize(int width, int height);
-  void setMinAndMax(float min, float max);
-  float getValue(string index);
-  void addValue(string index, float value);
-  void  checkSize(string index);
-  void setMaxSize(int maxSize);
-  void  update();
-  void  draw();
-  void  draw(int x, int y);
-  void drawSingleData(string index);
-  void setColor(string index, ofColor color);
-  void setActive(string index, bool active);
+            GoofyDataGraphic();
+  void      setDefault();
+  void      setupGraphic(string index);
+  void      setSize(float width, float height);
+  void      setMinAndMax(float min, float max);
+  float     getValue(string index);
+  void      addValue(string index, float value);
+  void      checkSize(string index);
+  void      setMaxSize(int maxSize);
+  void      update(string index, float value);
+  void      draw();
+  void      draw(float x, float y);
+  void      drawSingleData(string index);
+  void      setColor(string index, ofColor color);
+  void      setThreshold(string index, float min, float max);
+  void      setHit(string index, bool hit);
   
 private:
-  void resetSpace();
-  int maxSize;
-  int width;
-  int height;
-  float min;
-  float max;
-  float space;
+  void      resetSpace();
+  void      drawBackground();
+  void      drawGrid();
+  void      drawText(string index, int cont);
+  void      drawCharts();
+  void      drawBorder();
+  void      drawThreshold(string index);
+  int       maxSize;
+  float     width;
+  float     height;
+  float     min;
+  float     max;
+  float     space;
   tr1::unordered_map<string, SingleDataGraphicInfo > singleDataGraphic;
   
 };

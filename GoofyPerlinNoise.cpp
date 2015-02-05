@@ -8,11 +8,26 @@
 
 GoofyPerlinNoise::GoofyPerlinNoise(float resX, float resY, float speed)
 {
-    this->resX = resX;
-    this->resY = resY;
-    this->speed = speed;
-    this->time = 0;
-    this->drawPerlinImage = false;
+  noiseParams = NULL;
+  this->resX = resX;
+  this->resY = resY;
+  this->speed = speed;
+  this->time = 0;
+  this->drawPerlinImage = false;
+}
+
+GoofyPerlinNoise::~GoofyPerlinNoise()
+{
+  removeNoiseParams();
+}
+
+void GoofyPerlinNoise::removeNoiseParams()
+{
+  if(noiseParams)
+  {
+    noiseParams = NULL;
+    delete noiseParams;
+  }
 }
 
 ofParameterGroup* GoofyPerlinNoise::getParameterGroup()
@@ -30,11 +45,6 @@ ofParameterGroup* GoofyPerlinNoise::getParameterGroup()
   }
   return noiseParams;
 }
-//
-//void GoofyPerlinNoise::setOSC(int localPort, string host, int remotePort)
-//{
-//  sync.setup(*noiseParams,localPort, host,remotePort);
-//}
 
 void GoofyPerlinNoise::initPerlinImage(int perlinImgWidth, int perlinImgHeight, int width, int height)
 {

@@ -37,7 +37,7 @@ public:
   void                      initGUI();
   void                      update();
   void                      updateContourFinder();
-  cv::Mat                   gerROIImage();
+  cv::Mat                   getROIImage();
   void                      drawROI();
   virtual void              draw(int x, int y);
   virtual void              draw(int x, int y, int width, int height);
@@ -51,6 +51,7 @@ public:
   void                      sendOSC(ofRectangle rect, int pos);
   void                      readXML();
   void                      drawInput();
+  virtual void              addExtraParamsGUI(){};
   ofVideoPlayer*            movie;
   ofVideoGrabber*           cam;
   ofxCv::ContourFinder      contourFinder;
@@ -74,6 +75,15 @@ public:
   ofParameter<bool>         pause;
   ofParameter<bool>         drawShape;
   ofParameter<bool>         drawRect;
+  ofParameter<int>          smoothingSize;
+  ofParameter<float>        smoothingShape;
+  ofParameter<bool>         smooth;
+  ofParameter<bool>         resempleBySpacing;
+  ofParameter<float>        resempledSpaceSize;
+  ofParameter<bool>         resempleByCount;
+  ofParameter<float>        resempledCoundSize;
+  ofParameter<bool>         drawFilled;
+  ofParameter<int>          blurSize;
   bool                      guiVisible;
   ofxPanel                  gui;
   ofParameter<ofColor>      targetColor;
