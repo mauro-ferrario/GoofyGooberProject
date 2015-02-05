@@ -66,16 +66,10 @@ GoofyParticle* GoofyParticleSystem::addParticle(ofVec3f newPosition)
 
 GoofyParticle* GoofyParticleSystem::addParticle(ofVec3f newPosition, float maxVelocity, long int life)
 {
-    GoofyParticle* particle = new GoofyParticle(newPosition, maxVelocity * percParticleSpeed);
-    particle->position = newPosition;
-    particle->target = newPosition;
-    particle->setBoundingBox(boundingBox);
-    if(life != 0)
-    {
-        particle->life = life;
-        particle->lifeActive = true;
-    }
-    particles.push_back(particle);
+  GoofyParticle* particle = new GoofyParticle(newPosition, maxVelocity * percParticleSpeed);
+  particle->target = newPosition;
+  particle->setBoundingBox(boundingBox);
+  particles.push_back(particle);
   return particle;
 }
 
@@ -122,7 +116,7 @@ void GoofyParticleSystem::updateAndDraw()
             if(bFollowTarget)
                 (*vItr)->followTarget();
            if(moveNoise)
-                (*vItr)->moveWithNoise(goofyPerlinNoise,2);;
+                (*vItr)->moveWithNoise(goofyPerlinNoise, goofyPerlinNoiseForce);;
             if(followFlow)
                 (*vItr)->follow(goofyFlowField);
             applyRepulsions((*vItr));
