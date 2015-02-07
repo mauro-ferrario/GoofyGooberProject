@@ -9,11 +9,11 @@
 
 uint GoofyParticle::count = 0;
 
-GoofyParticle::GoofyParticle(ofVec3f position, float limitVelocity, ofColor color, float spring, float friction, long int life)
+GoofyParticle::GoofyParticle()
 {
     id = GoofyParticle::count;
     GoofyParticle::count++;
-    init(position, limitVelocity, color, spring, friction, life);
+    //init(position, limitVelocity, color, spring, friction, life);
 }
 
 void GoofyParticle::init(ofVec3f position, float limitVelocity, ofColor color, float spring, float friction, long int life)
@@ -27,8 +27,8 @@ void GoofyParticle::init(ofVec3f position, float limitVelocity, ofColor color, f
     bCheckBoundingBox = false;
     this->spring =  spring;
     this->friction = friction;
-    this->friction = .83;
-    this->spring = .183;
+//    this->friction = .83;
+//    this->spring = .183;
     this->life = life;
     size = 1;
     if(life != 0)
@@ -144,6 +144,7 @@ void GoofyParticle::applyRepulsion(GoofyMagneticPoint* repeller)
     rejectForce.y = ofClamp(rejectForce.y, -limitVelocity/4, limitVelocity/4);
   }
   addForce(rejectForce);
+  repeller = NULL;
 }
 
 void GoofyParticle::applyAttraction(GoofyMagneticPoint* attractor)
@@ -160,6 +161,7 @@ void GoofyParticle::applyAttraction(GoofyMagneticPoint* attractor)
   attractionForce.y = (attractor->force * (abs(distCoord.y)/attractor->radius)) * sin((angleDirection));
   attractionForce /= 10;
   addForce(-attractionForce);
+  attractor = NULL;
 }
 
 void GoofyParticle::followTarget(ofPoint target)

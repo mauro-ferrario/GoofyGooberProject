@@ -66,7 +66,8 @@ GoofyParticle* GoofyParticleSystem::addParticle(ofVec3f newPosition)
 
 GoofyParticle* GoofyParticleSystem::addParticle(ofVec3f newPosition, float maxVelocity, long int life)
 {
-  GoofyParticle* particle = new GoofyParticle(newPosition, maxVelocity * percParticleSpeed);
+  GoofyParticle* particle = new GoofyParticle();
+  particle->init(newPosition, maxVelocity * percParticleSpeed);
   particle->target = newPosition;
   particle->setBoundingBox(boundingBox);
   particles.push_back(particle);
