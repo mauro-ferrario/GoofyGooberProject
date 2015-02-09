@@ -28,7 +28,7 @@ public:
     void            checkBoundingBox();
     void            followTarget();
     void            followTarget(ofPoint target);
-    void            applyRepulsion(GoofyMagneticPoint* repller);
+    void            applyRepulsion(GoofyMagneticPoint* repller, bool dependFromDistance = true);
     void            applyAttraction(GoofyMagneticPoint* repller);
     void            setTarget(ofPoint newTarget);
     
