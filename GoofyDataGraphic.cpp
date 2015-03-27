@@ -123,6 +123,7 @@ void GoofyDataGraphic::drawGrid()
   for(int a = 0; a < totLines; a++)
     ofLine(a*lineOffsetX, 0, a*lineOffsetX, height);
   ofPopStyle();
+  ofPopStyle();
 }
 
 void GoofyDataGraphic::drawText(string index, int cont)
