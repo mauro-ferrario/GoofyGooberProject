@@ -110,6 +110,8 @@ void GoofyParticle::checkBoundingBox()
 
 void GoofyParticle::followTarget()
 {
+  if(target.x == NULL)
+    return;
     ofPoint distance;
 	ofPoint	acceleration(0);
 	distance = target - position;
