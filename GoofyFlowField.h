@@ -22,12 +22,20 @@ public:
     void                                draw();
     ofVec2f                             lookup(ofVec2f lookup);
     vector< vector<ofVec2f> >           field;
+    vector< vector< vector<ofVec2f> > >  savedField;
     float                               cols;
     float                               rows;
     float                               resolution;
-    float                               resX;
-    float                               resY;
-    bool                                drawFlowGrid;
+    ofParameterGroup*                   getParameterGroup();
+    ofParameterGroup*                   flowParams;
+    ofParameter<float>                  resX;
+    ofParameter<float>                  resY;
+    ofParameter<float>                  force;
+    ofParameter<bool>                   drawFlowGrid;
+    ofParameter<bool>                   bResetFlow;
+//    ofParameter<bool>                   bSaveField;
+    ofRectangle                         changeFlowField(ofVec2f position, ofVec2f newDir);
+    ofParameter<int>                    changeFlowSize;
 };
 
 #endif
