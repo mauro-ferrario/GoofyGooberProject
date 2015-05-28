@@ -16,7 +16,6 @@ GoofyParticleSystem::GoofyParticleSystem()
 
 void GoofyParticleSystem::init()
 {
-  cout << "INIT GOOFY PARTCIEL SYSTEM" << endl;
     moveNoise = false;
     followFlow = false;
     bFollowTarget = true;
