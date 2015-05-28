@@ -29,6 +29,7 @@ public:
   ofParameter<float>  resX;
   ofParameter<float>  resY;
   ofParameter<float>  speed;
+  ofParameter<float>  force;
 
   bool                drawPerlinImage;
   ofImage             perlinImg;

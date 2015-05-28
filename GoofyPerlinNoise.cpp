@@ -42,6 +42,7 @@ ofParameterGroup* GoofyPerlinNoise::getParameterGroup()
       noiseParams->add(resX.set("ResX",0.01,.001,.01));
       noiseParams->add(resY.set("ResY",0.01,.001,.01));
       noiseParams->add(speed.set("Speed",.05,.0,.1));
+      noiseParams->add(force.set("Force",1,.0,1));
   }
   return noiseParams;
 }
