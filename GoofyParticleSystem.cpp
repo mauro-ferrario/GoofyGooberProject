@@ -16,11 +16,14 @@ GoofyParticleSystem::GoofyParticleSystem()
 
 void GoofyParticleSystem::init()
 {
+  cout << "INIT GOOFY PARTCIEL SYSTEM" << endl;
     moveNoise = false;
     followFlow = false;
     bFollowTarget = true;
     percParticleSpeed = 1;
     goofyPerlinNoiseForce = 1;
+    applyWind             = true;
+    wind                  = ofVec2f(15,0);
 }
 
 ofParameterGroup* GoofyParticleSystem::getParameterGroup()
@@ -33,7 +36,7 @@ ofParameterGroup* GoofyParticleSystem::getParameterGroup()
   {
     goofyParticleSystemParams->setName("GoofyParticleSystem");
     goofyParticleSystemParams->add(percParticleSpeed.set("Particlespeed", 1, 0, 10));
-    goofyParticleSystemParams->add(goofyPerlinNoiseForce.set("Goofyperlinforce", 1, 0, 10));
+    goofyParticleSystemParams->add(goofyPerlinNoiseForce.set("Goofyperlinforce", 1, 0, 1));
     percParticleSpeed.addListener(this, &GoofyParticleSystem::changeVelocityFromOfParams);
   }
   return goofyParticleSystemParams;
@@ -117,7 +120,7 @@ void GoofyParticleSystem::updateAndDraw()
             if(bFollowTarget)
                 (*vItr)->followTarget();
            if(moveNoise)
-                (*vItr)->moveWithNoise(goofyPerlinNoise, goofyPerlinNoiseForce);;
+                (*vItr)->moveWithNoise(goofyPerlinNoise, goofyPerlinNoiseForce * 20);;
             if(followFlow)
                 (*vItr)->follow(goofyFlowField);
             applyRepulsions((*vItr));
@@ -208,7 +211,6 @@ void GoofyParticleSystem::removeLastRepeller()
 
 void GoofyParticleSystem::lastActionInsideUpdateLoop(GoofyParticle* particle)
 {
-
 }
 
 void GoofyParticleSystem::update()

@@ -54,6 +54,10 @@ public:
     vector<GoofyParticle*>          particles;
     vector<GoofyMagneticPoint*>     repellers;
     vector<GoofyMagneticPoint*>     attractors;
+  
+  
+    bool                            applyWind;
+    ofVec2f                         wind;
 
 };
 
