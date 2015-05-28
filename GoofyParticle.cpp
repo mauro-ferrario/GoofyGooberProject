@@ -55,7 +55,7 @@ void GoofyParticle::moveWithNoise(GoofyPerlinNoise &goofyPerlinNoise, float _vel
 
 void GoofyParticle::follow(GoofyFlowField &flow) {
     ofVec3f desired = flow.lookup(position);
-    desired *= limitVelocity;
+    desired *= flow.force * limitVelocity ; //ofGetMouseX()/float(ofGetWindowWidth())*10 ;//limitVelocity;
     addForce(desired);
 }
 
