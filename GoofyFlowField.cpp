@@ -14,6 +14,7 @@ GoofyFlowField::GoofyFlowField()
     resY = 0.005;
     drawFlowGrid = false;
     bResetFlow = false;
+    changeFlowSize = 10;
 }
 
 void GoofyFlowField::init(int _width, int _height, float _resolution)
@@ -148,7 +149,7 @@ ofParameterGroup* GoofyFlowField::getParameterGroup()
     flowParams->add(drawFlowGrid.set("Draw flow", false));
     flowParams->add(bResetFlow.set("Reset flow", false));
 //    flowParams->add(bSaveField.set("Save flow", false));
-    flowParams->add(changeFlowSize.set("Change flow size",1,1,30));
+    flowParams->add(changeFlowSize.set("Change flow size",10,1,30));
 //    bSaveField.addListener(this, &GoofyFlowField::saveFlowChanged);
   }
   return flowParams;
