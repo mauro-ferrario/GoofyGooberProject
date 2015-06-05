@@ -64,6 +64,11 @@ void GoofyParticle::addForce(ofVec3f _force)
     force += _force;
 }
 
+void GoofyParticle::addWind(ofVec3f _force)
+{
+  addForce(_force);
+}
+
 void GoofyParticle::update()
 {
     if(!active)
