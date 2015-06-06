@@ -25,7 +25,7 @@ public:
     vector< vector< vector<ofVec2f> > >  savedField;
     float                               cols;
     float                               rows;
-    float                               resolution;
+    ofParameter<float>                  resolution;
     ofParameterGroup*                   getParameterGroup();
     ofParameterGroup*                   flowParams;
     ofParameter<float>                  resX;
@@ -36,6 +36,7 @@ public:
 //    ofParameter<bool>                   bSaveField;
     ofRectangle                         changeFlowField(ofVec2f position, ofVec2f newDir);
     ofParameter<int>                    changeFlowSize;
+  ofVec2f                               size;
 };
 
 #endif

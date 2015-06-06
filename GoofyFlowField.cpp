@@ -22,7 +22,8 @@ void GoofyFlowField::init(int _width, int _height, float _resolution)
     this->resolution = _resolution;
     cols = _width/resolution;
     rows = _height/resolution;
-    
+  size.x = _width;
+  size.y = _height;
     ofSeedRandom();
     
     float cont = ofRandom(-10000, 10000);
@@ -42,16 +43,22 @@ void GoofyFlowField::init(int _width, int _height, float _resolution)
 
 void GoofyFlowField::resetFlow()
 {
+  cols = size.x/resolution;
+  rows = size.y/resolution;
+  field.clear();
     ofSeedRandom();
     float cont = ofRandom(-10000, 10000);
     float xoff = 0;
     for (int i = 0; i < cols; i++) {
-        float yoff = 0;
+      float yoff = 0;
+      vector<ofVec2f> row;
         for (int j = 0; j < rows; j++) {
             float theta = ofMap(ofNoise(xoff,yoff, cont),0,1,0,2*TWO_PI);
-            field[i][j] = ofVec2f(cos(theta),sin(theta));
+//          field[i][j] = ofVec2f(cos(theta),sin(theta));
+          row.push_back(ofVec2f(cos(theta),sin(theta)));
             yoff += resY;
         }
+      field.push_back(row);
         xoff += resX;
     }
 }
@@ -146,6 +153,7 @@ ofParameterGroup* GoofyFlowField::getParameterGroup()
     flowParams->add(resX.set("ResX",0.01,.001,.01));
     flowParams->add(resY.set("ResY",0.01,.001,.01));
     flowParams->add(force.set("Force",0.01,.001,1));
+    flowParams->add(resolution.set("Resolution", 10, 0, 200));
     flowParams->add(drawFlowGrid.set("Draw flow", false));
     flowParams->add(bResetFlow.set("Reset flow", false));
 //    flowParams->add(bSaveField.set("Save flow", false));
