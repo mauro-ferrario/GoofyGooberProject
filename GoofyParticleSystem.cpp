@@ -22,7 +22,7 @@ void GoofyParticleSystem::init()
     percParticleSpeed = 1;
     goofyPerlinNoiseForce = 1;
     applyWind             = true;
-    wind                  = ofVec2f(15,0);
+    wind                  = ofVec2f(0,10);
 }
 
 ofParameterGroup* GoofyParticleSystem::getParameterGroup()
