@@ -29,6 +29,7 @@ void GoofyParticle::init(ofVec3f position, float limitVelocity, ofColor color, f
 //    this->friction = .83;
 //    this->spring = .183;
     this->life = life;
+  cout << "LIFE = " << this->life << endl;
     size = 1;
     if(life != 0)
         lifeActive = true;
