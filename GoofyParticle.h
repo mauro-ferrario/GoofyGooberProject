@@ -24,7 +24,7 @@ public:
     virtual void    draw();
     void            moveWithNoise(GoofyPerlinNoise &goofyPerlinNoise);
     void            moveWithNoise(GoofyPerlinNoise &goofyPerlinNoise, float _velocity);
-    void            follow(GoofyFlowField &flow);
+    virtual void    follow(GoofyFlowField &flow);
     void            setBoundingBox(ofRectangle rect);
     void            checkBoundingBox();
     void            followTarget();
