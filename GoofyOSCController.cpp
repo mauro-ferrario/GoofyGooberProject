@@ -6,6 +6,7 @@ GoofyOSCController::GoofyOSCController()
   lastString = "";
   addListener();
   setupOSC();
+  drawEnabled = true;
 }
 
 void GoofyOSCController::setupOSC()
@@ -47,4 +48,14 @@ void GoofyOSCController::draw(ofEventArgs &e)
   }
   ofPopStyle();
   ofPopMatrix();
+}
+
+void GoofyOSCController::_toggleDraw()
+{
+  drawEnabled = !drawEnabled;
+  if(drawEnabled)
+    ofAddListener(ofEvents().draw, this, &GoofyOSCController::draw);
+  else
+    ofRemoveListener(ofEvents().draw, this, &GoofyOSCController::draw);
+    
 }

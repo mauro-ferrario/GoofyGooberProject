@@ -51,6 +51,11 @@ public:
     GoofyOSCController::getInstance().varNames[mapString] = varName;
   }
   
+  static void toggleDraw()
+  {
+    GoofyOSCController::getInstance()._toggleDraw();
+  }
+  
 private:
   
   GoofyOSCController(GoofyOSCController const&);
@@ -66,6 +71,8 @@ private:
   tr1::unordered_map<string, string > varNames;
   string                              lastString;
   int                                 posToFill;
+  bool                                drawEnabled;
+  void                                _toggleDraw();
   
   const char *korgNanoController2[16] =
   {
