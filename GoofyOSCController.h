@@ -95,5 +95,4 @@ private:
   };
 };
 
-
 #endif /* defined(__goofyLeapImageGallery__GoofyOSCControllerUtils__) */
